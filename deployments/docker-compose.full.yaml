@@ -1,0 +1,50 @@
+services:
+  app:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+      - ./web:/app/web:ro
+      - ./logs:/app/logs
+    restart: on-failure
+
+  postgres:
+    image: postgres:16.2-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: kairos-db
+    ports:
+      - 5433:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d kairos-db"]
+      interval: 5s
+      timeout: 5s
+      retries: 30 # high value for VM compatibility
+    restart: on-failure
+
+  rabbitmq:
+    image: rabbitmq:4.1.3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmqctl status"]
+      interval: 5s
+      timeout: 5s
+      retries: 30 # high value for VM compatibility
+    restart: on-failure
+
+volumes:
+  postgres_data:

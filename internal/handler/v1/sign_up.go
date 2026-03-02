@@ -1,0 +1,33 @@
+package v1
+
+import (
+	"Kairos/internal/errs"
+	"Kairos/internal/models"
+
+	"github.com/wb-go/wbf/ginext"
+)
+
+func (h *Handler) SignUp(c *ginext.Context) {
+
+	var request RegisterDTO
+	if err := c.ShouldBindJSON(&request); err != nil {
+		RespondError(c, errs.ErrInvalidJSON)
+		return
+	}
+
+	user := models.User{Login: request.Login, Password: request.Password}
+	userID, err := h.service.CreateUser(c.Request.Context(), user)
+	if err != nil {
+		RespondError(c, err)
+		return
+	}
+
+	token, err := h.service.CreateToken(userID)
+	if err != nil {
+		RespondError(c, err)
+		return
+	}
+
+	respondOK(c, token)
+
+}

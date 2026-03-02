@@ -1,0 +1,19 @@
+-- +goose Up
+CREATE TABLE IF NOT EXISTS users (
+    id          INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL 
+);
+
+CREATE TABLE IF NOT EXISTS events (
+    id          INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    uuid        UUID NOT NULL UNIQUE,
+    title       VARCHAR(200) NOT NULL,
+    description TEXT,
+    event_date  TIMESTAMP WITH TIME ZONE NOT NULL,
+    total_seats INTEGER NOT NULL CHECK (total_seats > 0),
+    created_at  TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+-- +goose Down
+DROP TABLE IF EXISTS users;
