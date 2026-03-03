@@ -29,29 +29,11 @@ func (b *Broker) Consume() error {
 // It unmarshals the JSON payload into a Notification, checks its status,
 // attempts to send it via the notifier, and updates the status accordingly.
 func (b *Broker) handler(ctx context.Context, msg amqp091.Delivery) error {
-
+	_ = ctx
 	var notification models.Notification
 
 	if err := json.Unmarshal(msg.Body, &notification); err != nil {
 		return fmt.Errorf("failed to unmarshal json: %w", err)
-	}
-
-	status, err := b.storage.GetStatus(ctx, notification.ID)
-	if err != nil {
-		return err
-	}
-
-	if status != models.StatusCanceled {
-
-		if err := b.notifier.Notify(notification); err != nil {
-			if status != models.StatusFailed {
-				b.updateStatus(ctx, notification.ID, notification.SendAt, models.StatusFailed)
-			}
-			return err
-		}
-
-		b.updateStatus(ctx, notification.ID, notification.SendAt, status)
-
 	}
 
 	return nil

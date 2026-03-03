@@ -67,6 +67,8 @@ func mapErrorToStatus(err error) (int, string) {
 		errors.Is(err, errs.ErrTitleTooLong),
 		errors.Is(err, errs.ErrDescriptionTooLong),
 		errors.Is(err, errs.ErrInvalidSeatCount),
+		errors.Is(err, errs.ErrInvalidUserID),
+		errors.Is(err, errs.ErrInvalidBookingTTL),
 		errors.Is(err, errs.ErrTooManySeats):
 
 		return http.StatusBadRequest, err.Error()
@@ -74,8 +76,15 @@ func mapErrorToStatus(err error) (int, string) {
 	case errors.Is(err, errs.ErrNotificationNotFound):
 		return http.StatusNotFound, err.Error()
 
-	case errors.Is(err, errs.ErrUserAlreadyExists):
+	case errors.Is(err, errs.ErrUserAlreadyExists),
+		errors.Is(err, errs.ErrBookingAlreadyExists):
 		return http.StatusConflict, err.Error()
+
+	case errors.Is(err, errs.ErrInvalidToken),
+		errors.Is(err, errs.ErrEmptyAuthHeader),
+		errors.Is(err, errs.ErrInvalidAuthHeader),
+		errors.Is(err, errs.ErrInvalidCredentials):
+		return http.StatusUnauthorized, err.Error()
 
 	default:
 		if errors.Is(err, errs.ErrUrgentDeliveryFailed) {

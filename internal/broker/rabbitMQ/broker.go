@@ -103,19 +103,3 @@ func (b *Broker) Shutdown() {
 		b.logger.LogInfo("rabbit — shutdown complete", "layer", "broker.rabbitMQ")
 	}
 }
-
-// recover retrieves pending notifications from storage and re-queues them for processing.
-// It logs any errors encountered during recovery.
-func (b *Broker) recover(ctx context.Context) {
-	notifications, err := b.storage.Recover(ctx)
-	if err != nil {
-		b.logger.LogError("rabbit — failed to recover notifications from db", err, "layer", "broker.rabbitMQ")
-		return
-	}
-	for _, notification := range notifications {
-		if err := b.Produce(notification); err != nil {
-			b.logger.LogError("rabbit — failed to produce notification", err, "notificationID", notification.ID, "layer", "broker.rabbitMQ")
-		}
-	}
-	b.logger.Debug("rabbit — recovered", "layer", "broker.rabbitMQ")
-}

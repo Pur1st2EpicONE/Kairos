@@ -6,26 +6,25 @@ import (
 	"Kairos/internal/models"
 	"Kairos/internal/repository/postgres"
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/wb-go/wbf/dbpg"
 )
 
 type AuthStorage interface {
-	CreateUser(ctx context.Context, user models.User) (int, error)
+	CreateUser(ctx context.Context, user models.User) (int64, error)
 	GetUserByLogin(ctx context.Context, login string) (models.User, error)
 }
 
 type CoreStorage interface {
+	Transact(ctx context.Context, fn func(tx *sql.Tx, ctx context.Context) error) error
+	BeginTx(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error)
 	CreateEvent(ctx context.Context, event *models.Event) error
-	DeleteNotification(ctx context.Context, notificationID string) error       // DeleteNotification removes a notification by its ID.
-	GetStatus(ctx context.Context, notificationID string) (string, error)      // GetStatus returns the current status of a notification by its ID.
-	GetAllStatuses(ctx context.Context) ([]models.Notification, error)         // GetAllStatuses returns all notifications and their statuses.
-	SetStatus(ctx context.Context, notificationID string, status string) error // SetStatus updates the status of a notification.
-	MarkLates(ctx context.Context) ([]string, error)                           // MarkLates marks notifications that are late in the database and returns their IDs.
-	Recover(ctx context.Context) ([]models.Notification, error)                // Recover returns pending or late notifications for re-queuing.
-	Cleanup(ctx context.Context)                                               // Cleanup performs periodic cleanup tasks, such as removing expired notifications.
-	Close()                                                                    // Close closes the storage connection.
+	GetEventForBooking(tx *sql.Tx, ctx context.Context, eventUUID string) (*models.Event, error)
+	CreateBooking(tx *sql.Tx, ctx context.Context, booking *models.Booking) (int64, error)
+	UpdateEventSeats(tx *sql.Tx, ctx context.Context, eventDBID int64) error
+	Close()
 }
 
 type Storage struct {

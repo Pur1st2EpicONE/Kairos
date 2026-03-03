@@ -1,19 +1,34 @@
 -- +goose Up
 CREATE TABLE IF NOT EXISTS users (
-    id          INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL 
 );
 
 CREATE TABLE IF NOT EXISTS events (
-    id          INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    userid      BIGINT NOT NULL,
     uuid        UUID NOT NULL UNIQUE,
     title       VARCHAR(200) NOT NULL,
     description TEXT,
     event_date  TIMESTAMP WITH TIME ZONE NOT NULL,
-    total_seats INTEGER NOT NULL CHECK (total_seats > 0),
-    created_at  TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+    available_seats INTEGER NOT NULL,
+    booking_ttl INTEGER NOT NULL,
+    created_at  TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    CONSTRAINT fk_user FOREIGN KEY (userid) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS bookings (
+    id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id       BIGINT NOT NULL REFERENCES users(id),
+    event_id      BIGINT NOT NULL REFERENCES events(id),
+    status        VARCHAR(20) NOT NULL,
+    created_at    TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    expires_at    TIMESTAMP WITH TIME ZONE NOT NULL, 
+    UNIQUE(user_id, event_id, status) 
 );
 
 -- +goose Down
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS bookings CASCADE;
+DROP TABLE IF EXISTS events CASCADE;
+DROP TABLE IF EXISTS users CASCADE;

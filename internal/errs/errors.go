@@ -37,4 +37,14 @@ var (
 
 	ErrUserAlreadyExists  = errors.New("user already exists")
 	ErrInvalidCredentials = errors.New("invalid login or password")
+
+	ErrEmptyAuthHeader      = errors.New("empty auth header")
+	ErrInvalidAuthHeader    = errors.New("invalid auth header")
+	ErrInvalidToken         = errors.New("invalid token")
+	ErrInvalidEventID       = errors.New("empty or invalid event_id")
+	ErrEventFull            = errors.New("no seats left for the event")
+	ErrEventNotFound        = errors.New("event not found")
+	ErrBookingAlreadyExists = errors.New("booking already exists")
+	ErrInvalidUserID        = errors.New("invalid user_id: user does not exist")
+	ErrInvalidBookingTTL    = errors.New("invalid booking expiration time")
 )

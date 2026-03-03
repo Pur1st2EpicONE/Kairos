@@ -6,6 +6,15 @@ import (
 	"Kairos/internal/repository"
 )
 
+type AuthService struct {
+	logger  logger.Logger
+	storage repository.AuthStorage
+}
+
+func NewAuthService(logger logger.Logger, storage repository.AuthStorage) *AuthService {
+	return &AuthService{logger: logger, storage: storage}
+}
+
 type CoreService struct {
 	logger  logger.Logger
 	broker  broker.Broker

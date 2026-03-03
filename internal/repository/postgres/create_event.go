@@ -9,10 +9,10 @@ func (c *CoreStorage) CreateEvent(ctx context.Context, event *models.Event) erro
 
 	_, err := c.db.ExecContext(ctx, `
 
-	INSERT INTO events (uuid, title, description, event_date, total_seats)
-	VALUES ($1, $2, $3, $4, $5)`,
+	INSERT INTO events (uuid, userID, title, description, event_date, available_seats, booking_ttl)
+	VALUES ($1, $2, $3, $4, $5, $6, $7)`,
 
-		event.ID, event.Title, event.Description, event.Date, event.TotalSeats)
+		event.ID, event.UserID, event.Title, event.Description, event.Date, event.Seats, int(event.BookingTTL.Seconds()))
 	if err != nil {
 		return err
 	}

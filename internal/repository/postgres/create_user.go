@@ -8,9 +8,9 @@ import (
 	"github.com/lib/pq"
 )
 
-func (s *AuthStorage) CreateUser(ctx context.Context, user models.User) (int, error) {
+func (s *AuthStorage) CreateUser(ctx context.Context, user models.User) (int64, error) {
 
-	var insertedID int
+	var insertedID int64
 	err := s.db.QueryRowContext(ctx, `
 
     INSERT INTO users (username, password)

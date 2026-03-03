@@ -15,7 +15,8 @@ type CreateEventDTO struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Date        string `json:"date"`
-	TotalSeats  int    `json:"total_seats"`
+	Seats       int    `json:"seats"`
+	BookingTTL  string `json:"booking_ttl"`
 }
 
 type CreateNotificationV1 struct {

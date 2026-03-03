@@ -11,7 +11,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (a *AuthService) GetUserId(ctx context.Context, user models.User) (int, error) {
+func (a *AuthService) GetUserId(ctx context.Context, user models.User) (int64, error) {
 
 	if user.Login == "" || user.Password == "" {
 		fmt.Println("empty login or pass")
@@ -32,5 +32,6 @@ func (a *AuthService) GetUserId(ctx context.Context, user models.User) (int, err
 		return 0, errs.ErrInvalidCredentials
 	}
 
-	return user.ID, nil
+	return int64(user2.ID), nil
+
 }

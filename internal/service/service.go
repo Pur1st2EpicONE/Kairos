@@ -1,5 +1,3 @@
-// Package service contains the business logic for notifications.
-// It coordinates operations between the broker, cache, and storage layers.
 package service
 
 import (
@@ -12,17 +10,15 @@ import (
 )
 
 type AuthService interface {
-	CreateUser(ctx context.Context, user models.User) (int, error)
-	CreateToken(userID int) (string, error)
-	GetUserId(ctx context.Context, user models.User) (int, error)
+	CreateUser(ctx context.Context, user models.User) (int64, error)
+	CreateToken(userID int64) (string, error)
+	GetUserId(ctx context.Context, user models.User) (int64, error)
 	ParseToken(tokenString string) (int64, error)
 }
 
 type CoreService interface {
+	CreateBooking(ctx context.Context, userID int64, eventID string) (int64, error)
 	CreateEvent(ctx context.Context, event *models.Event) (string, error)
-	GetAllStatuses(ctx context.Context) []models.Notification             // GetAllStatuses retrieves all notifications with their current status. Used for frontend display; not optimized.
-	GetStatus(ctx context.Context, notificationID string) (string, error) // GetStatus returns the current status of a specific notification by ID.
-	CancelNotification(ctx context.Context, notificationID string) error  // CancelNotification attempts to cancel a notification by ID.
 }
 
 type Service struct {

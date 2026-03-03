@@ -21,7 +21,7 @@ func validateCreate(event *models.Event) error {
 		return err
 	}
 
-	if err := validateSeats(event.TotalSeats); err != nil {
+	if err := validateSeats(event.Seats); err != nil {
 		return err
 	}
 

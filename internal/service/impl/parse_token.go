@@ -8,6 +8,7 @@ import (
 )
 
 func (a *AuthService) ParseToken(tokenString string) (int64, error) {
+
 	token, err := jwt.ParseWithClaims(tokenString, &jwt.StandardClaims{}, func(token *jwt.Token) (any, error) {
 		return []byte("abobus"), nil
 	})
