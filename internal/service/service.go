@@ -17,8 +17,9 @@ type AuthService interface {
 }
 
 type CoreService interface {
-	CreateBooking(ctx context.Context, userID int64, eventID string) (int64, error)
 	CreateEvent(ctx context.Context, event *models.Event) (string, error)
+	CreateBooking(ctx context.Context, userID int64, eventID string) (int64, error)
+	ConfirmBooking(ctx context.Context, userID int64, eventID string) error
 }
 
 type Service struct {

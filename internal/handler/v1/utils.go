@@ -69,14 +69,18 @@ func mapErrorToStatus(err error) (int, string) {
 		errors.Is(err, errs.ErrInvalidSeatCount),
 		errors.Is(err, errs.ErrInvalidUserID),
 		errors.Is(err, errs.ErrInvalidBookingTTL),
+		errors.Is(err, errs.ErrBookingExpired),
+		errors.Is(err, errs.ErrInvalidEventID),
 		errors.Is(err, errs.ErrTooManySeats):
 
 		return http.StatusBadRequest, err.Error()
 
-	case errors.Is(err, errs.ErrNotificationNotFound):
+	case errors.Is(err, errs.ErrBookingNotFound),
+		errors.Is(err, errs.ErrNotificationNotFound):
 		return http.StatusNotFound, err.Error()
 
 	case errors.Is(err, errs.ErrUserAlreadyExists),
+		errors.Is(err, errs.ErrAlreadyConfirmed),
 		errors.Is(err, errs.ErrBookingAlreadyExists):
 		return http.StatusConflict, err.Error()
 

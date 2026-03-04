@@ -24,9 +24,10 @@ CREATE TABLE IF NOT EXISTS bookings (
     event_id      BIGINT NOT NULL REFERENCES events(id),
     status        VARCHAR(20) NOT NULL,
     created_at    TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    expires_at    TIMESTAMP WITH TIME ZONE NOT NULL, 
-    UNIQUE(user_id, event_id, status) 
+    expires_at    TIMESTAMP WITH TIME ZONE NOT NULL
 );
+
+CREATE UNIQUE INDEX active_bookings_idx ON bookings (user_id, event_id) WHERE status = 'pending';
 
 -- +goose Down
 DROP TABLE IF EXISTS bookings CASCADE;

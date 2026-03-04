@@ -13,7 +13,6 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"sync"
 	"syscall"
 
 	"context"
@@ -41,7 +40,7 @@ func Boot() *App {
 
 	logger, logFile := logger.NewLogger(config.Logger)
 
-	db, err := connectDB(logger, config.Storage)
+	db, err := bootstrapDB(logger, config.Storage)
 	if err != nil {
 		logger.LogFatal("app — failed to connect to database", err, "layer", "app")
 	}
@@ -55,7 +54,7 @@ func Boot() *App {
 
 }
 
-func connectDB(logger logger.Logger, config config.Storage) (*dbpg.DB, error) {
+func bootstrapDB(logger logger.Logger, config config.Storage) (*dbpg.DB, error) {
 
 	db, err := repository.ConnectDB(config)
 	if err != nil {
@@ -85,8 +84,7 @@ func wireApp(db *dbpg.DB, logger logger.Logger, logFile *os.File, config config.
 	notifier := notifier.NewNotifier(config.Notifier)
 	broker, err := broker.NewBroker(logger, config.Broker, storage, notifier)
 	service := service.NewService(logger, broker, storage)
-	handler := handler.NewHandler(service)
-	server := server.NewServer(logger, config.Server, handler)
+	server := server.NewServer(logger, config.Server, handler.NewHandler(config.Server, service), cancel)
 
 	if err != nil {
 		return nil, err
@@ -126,32 +124,19 @@ func newContext(logger logger.Logger) (context.Context, context.CancelFunc) {
 
 func (a *App) Run() {
 
-	var wg sync.WaitGroup
-
-	wg.Go(func() {
-		if err := a.server.Run(); err != nil {
-			a.logger.LogFatal("server run failed", err, "layer", "app")
-		}
-	})
-
-	// wg.Go(func() {
-	// 	if err := a.broker.Consume(); err != nil {
-	// 		a.logger.LogFatal("consumer run failed", err, "layer", "app")
-	// 	}
-	// })
+	go a.server.Run()
+	go a.broker.Consume()
 
 	<-a.ctx.Done()
 
-	a.Stop(&wg)
+	a.Stop()
 
 }
 
-func (a *App) Stop(wg *sync.WaitGroup) {
+func (a *App) Stop() {
 
 	a.server.Shutdown()
 	a.broker.Shutdown()
-
-	wg.Wait()
 
 	a.storage.Close()
 

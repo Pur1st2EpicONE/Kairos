@@ -3,6 +3,7 @@
 package handler
 
 import (
+	"Kairos/internal/config"
 	"Kairos/internal/errs"
 	"Kairos/internal/service"
 	"context"
@@ -17,14 +18,14 @@ import (
 
 const templatePath = "web/templates/index.html"
 
-func NewHandler(service *service.Service) http.Handler {
+func NewHandler(config config.Server, service *service.Service) http.Handler {
 
 	handler := ginext.New("")
 
 	handler.Use(ginext.Recovery())
 
 	apiV1 := handler.Group("/api/v1")
-	handlerV1 := v1.NewHandler(*service)
+	handlerV1 := v1.NewHandler(config, *service)
 
 	auth := apiV1.Group("/auth")
 	auth.POST("/sign-up", handlerV1.SignUp)

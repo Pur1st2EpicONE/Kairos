@@ -3,16 +3,15 @@
 package v1
 
 import (
+	"Kairos/internal/config"
 	"Kairos/internal/service"
 )
 
-// Handler is the v1 API handler for notifications.
-// It wraps the service layer and provides HTTP endpoints for CRUD operations.
 type Handler struct {
+	config  config.Server
 	service service.Service
 }
 
-// NewHandler creates a new v1 Handler with the provided service.
-func NewHandler(service service.Service) *Handler {
-	return &Handler{service: service}
+func NewHandler(config config.Server, service service.Service) *Handler {
+	return &Handler{config: config, service: service}
 }

@@ -43,12 +43,12 @@ type Notification struct {
 }
 
 const (
-	StatusPending            = "pending"                // Notification is created but not yet sent
-	StatusCanceled           = "canceled"               // Notification has been canceled
-	StatusFailedToSendInTime = "failed to send in time" // Notification failed to send before scheduled time
-	StatusFailed             = "failed to send"         // Notification failed to send due to error
-	StatusLate               = "running late"           // Notification delayed past its scheduled send time
-	StatusSent               = "sent"                   // Notification was successfully sent
+	StatusPending   = "pending"  // Notification is created but not yet sent
+	StatusCanceled  = "canceled" // Notification has been canceled
+	StatusConfirmed = "confirmed"
+	StatusExpired   = "expired"
+	StatusLate      = "running late" // Notification delayed past its scheduled send time
+	StatusSent      = "sent"         // Notification was successfully sent
 )
 
 const (

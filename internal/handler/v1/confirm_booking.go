@@ -2,6 +2,7 @@ package v1
 
 import (
 	"Kairos/internal/errs"
+	"Kairos/internal/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/wb-go/wbf/helpers"
@@ -18,16 +19,16 @@ func (h *Handler) ConfirmBooking(c *gin.Context) {
 
 	eventIDStr := c.Param("id")
 	if err := helpers.ParseUUID(eventIDStr); err != nil {
+
 		RespondError(c, errs.ErrInvalidEventID)
 		return
 	}
 
-	bookingID, err := h.service.CreateBooking(c.Request.Context(), userID, eventIDStr)
-	if err != nil {
+	if err := h.service.ConfirmBooking(c.Request.Context(), userID, eventIDStr); err != nil {
 		RespondError(c, err)
 		return
 	}
 
-	respondOK(c, bookingID)
+	respondOK(c, models.StatusConfirmed)
 
 }

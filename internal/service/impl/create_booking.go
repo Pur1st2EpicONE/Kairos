@@ -26,9 +26,15 @@ func (c *CoreService) CreateBooking(ctx context.Context, userID int64, eventID s
 		}
 
 		var innerErr error
-		bookingID, innerErr = c.storage.CreateBooking(tx, ctx, initBooking(userID, event.DBID, event.BookingTTL))
+		booking := initBooking(userID, event.DBID, event.BookingTTL)
+
+		bookingID, innerErr = c.storage.CreateBooking(tx, ctx, booking)
 		if innerErr != nil {
 			return c.wrap(innerErr)
+		}
+
+		if err := c.broker.Produce(booking); err != nil {
+			return c.wrap(err)
 		}
 
 		return c.storage.UpdateEventSeats(tx, ctx, event.DBID)

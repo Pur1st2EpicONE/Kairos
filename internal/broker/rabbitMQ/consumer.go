@@ -1,7 +1,6 @@
 package rabbitmq
 
 import (
-	"Kairos/internal/models"
 	"context"
 	"encoding/json"
 	"errors"
@@ -12,29 +11,24 @@ import (
 	wbf "github.com/wb-go/wbf/rabbitmq"
 )
 
-// Consume starts the RabbitMQ consumer and system monitor in the background.
-// It returns an error if the consumer fails to start for reasons other than client closure or context cancellation.
-func (b *Broker) Consume() error {
+func (b *Broker) Consume() {
 
 	if err := b.Consumer.Start(b.client.Context()); err != nil &&
 		!errors.Is(err, wbf.ErrClientClosed) && !errors.Is(err, context.Canceled) {
-		return err
+		b.logger.LogError("broker — consumer returned unexpected context error", err, "layer", "broker.rabbimq")
 	}
-
-	return nil
 
 }
 
-// handler processes a single RabbitMQ delivery message.
-// It unmarshals the JSON payload into a Notification, checks its status,
-// attempts to send it via the notifier, and updates the status accordingly.
 func (b *Broker) handler(ctx context.Context, msg amqp091.Delivery) error {
 	_ = ctx
-	var notification models.Notification
+	var bookingID int64
 
-	if err := json.Unmarshal(msg.Body, &notification); err != nil {
+	if err := json.Unmarshal(msg.Body, &bookingID); err != nil {
 		return fmt.Errorf("failed to unmarshal json: %w", err)
 	}
+
+	fmt.Println("SUCCESS", bookingID)
 
 	return nil
 
