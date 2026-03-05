@@ -5,8 +5,6 @@ package rabbitmq
 import (
 	"Kairos/internal/config"
 	"Kairos/internal/logger"
-	"Kairos/internal/notifier"
-	"Kairos/internal/repository"
 
 	"context"
 	"fmt"
@@ -26,18 +24,21 @@ const (
 // Broker is a RabbitMQ implementation of the Broker interface.
 // It holds references to logger, config, consumer, producer, cache, storage, notifier, and the underlying RabbitClient.
 type Broker struct {
-	logger   logger.Logger          // structured logger for logging broker events
-	config   config.Broker          // broker configuration
-	Consumer *rabbitmq.Consumer     // RabbitMQ consumer instance
-	producer *rabbitmq.Publisher    // RabbitMQ publisher instance
-	storage  *repository.Storage    // storage interface for persistent storage
-	notifier notifier.Notifier      // notifier for sending notifications
-	client   *rabbitmq.RabbitClient // underlying RabbitMQ client
+	logger     logger.Logger       // structured logger for logging broker events
+	config     config.Broker       // broker configuration
+	Consumer   *rabbitmq.Consumer  // RabbitMQ consumer instance
+	producer   *rabbitmq.Publisher // RabbitMQ publisher instance
+	cancelFunc func(ctx context.Context, bookingID int64) error
+	client     *rabbitmq.RabbitClient // underlying RabbitMQ client
+}
+
+func (b *Broker) SetCancelFunc(fn func(ctx context.Context, bookingID int64) error) {
+	b.cancelFunc = fn
 }
 
 // NewBroker creates and initializes a new RabbitMQ Broker instance.
 // It sets up the RabbitMQ client, exchange, queue, producer, and consumer.
-func NewBroker(logger logger.Logger, config config.Broker, storage *repository.Storage, notifier notifier.Notifier) (*Broker, error) {
+func NewBroker(logger logger.Logger, config config.Broker, cancelFunc func(ctx context.Context, bookingID int64) error) (*Broker, error) {
 
 	client, err := rabbitmq.NewClient(rabbitmq.ClientConfig{
 
@@ -72,13 +73,12 @@ func NewBroker(logger logger.Logger, config config.Broker, storage *repository.S
 	producer := rabbitmq.NewPublisher(client, mainExchange, contentType)
 
 	b := &Broker{
-		logger:   logger,
-		config:   config,
-		Consumer: nil,
-		producer: producer,
-		storage:  storage,
-		notifier: notifier,
-		client:   client}
+		logger:     logger,
+		config:     config,
+		Consumer:   nil,
+		producer:   producer,
+		cancelFunc: cancelFunc,
+		client:     client}
 
 	b.Consumer = rabbitmq.NewConsumer(client, rabbitmq.ConsumerConfig{
 		Queue:         config.QueueName,

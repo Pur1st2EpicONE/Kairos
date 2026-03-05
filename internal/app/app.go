@@ -80,15 +80,27 @@ func bootstrapDB(logger logger.Logger, config config.Storage) (*dbpg.DB, error) 
 func wireApp(db *dbpg.DB, logger logger.Logger, logFile *os.File, config config.Config) (*App, error) {
 
 	ctx, cancel := newContext(logger)
+
 	storage := repository.NewStorage(logger, config.Storage, db)
 	notifier := notifier.NewNotifier(config.Notifier)
-	broker, err := broker.NewBroker(logger, config.Broker, storage, notifier)
-	service := service.NewService(logger, broker, storage)
-	server := server.NewServer(logger, config.Server, handler.NewHandler(config.Server, service), cancel)
 
+	broker, err := broker.NewBroker(logger, config.Broker, nil)
 	if err != nil {
 		return nil, err
 	}
+
+	service := service.NewService(logger, broker, storage, notifier)
+
+	broker.SetCancelFunc(func(ctx context.Context, bookingID int64) error {
+		return service.CancelBooking(ctx, bookingID)
+	})
+
+	server := server.NewServer(
+		logger,
+		config.Server,
+		handler.NewHandler(config.Server, service),
+		cancel,
+	)
 
 	return &App{
 		logger:  logger,
@@ -120,6 +132,12 @@ func newContext(logger logger.Logger) (context.Context, context.CancelFunc) {
 
 	return ctx, cancel
 
+}
+
+func processFunc(service service.Service) func(ctx context.Context, bookingID int64) error {
+	return func(ctx context.Context, bookingID int64) error {
+		return service.CancelBooking(ctx, bookingID)
+	}
 }
 
 func (a *App) Run() {

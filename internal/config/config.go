@@ -17,7 +17,6 @@ type Config struct {
 	Server   Server   `mapstructure:"server"`   // server configuration
 	Storage  Storage  `mapstructure:"database"` // database/storage configuration
 	Broker   Broker   `mapstructure:"broker"`   // broker configuration
-	Cache    Cache    `mapstructure:"cache"`    // cache configuration
 }
 
 // Notifier contains credentials and settings for Telegram and Email notifications.
@@ -103,17 +102,6 @@ type Retention struct {
 	Failed    time.Duration // retention for failed notifications
 }
 
-// Cache defines Redis cache connection and retry configuration.
-type Cache struct {
-	Host           string        `mapstructure:"host"`            // cache host
-	Port           string        `mapstructure:"port"`            // cache port
-	Password       string        `mapstructure:"password"`        // cache password
-	MaxMemory      string        `mapstructure:"max_memory"`      // max memory for Redis
-	Policy         string        `mapstructure:"policy"`          // eviction policy
-	RetryStrategy  Producer      `mapstructure:"retry_strategy"`  // retry strategy for cache operations
-	ExpirationTime time.Duration `mapstructure:"expiration_time"` // key expiration duration
-}
-
 // Load reads configuration from YAML files and environment variables, applies defaults, and returns a Config instance.
 func Load() (Config, error) {
 
@@ -144,8 +132,6 @@ func loadEnvs(conf *Config) {
 
 	conf.Storage.Username = os.Getenv("DB_USER")
 	conf.Storage.Password = os.Getenv("DB_PASSWORD")
-
-	conf.Cache.Password = os.Getenv("REDIS_PASSWORD")
 
 	conf.Notifier.TelegramToken = os.Getenv("TG_BOT_TOKEN")
 	conf.Notifier.TelegramReceiver = os.Getenv("TG_CHAT_ID")

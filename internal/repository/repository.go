@@ -23,9 +23,11 @@ type CoreStorage interface {
 	CreateEvent(ctx context.Context, event *models.Event) error
 	GetEventForBooking(tx *sql.Tx, ctx context.Context, eventUUID string) (*models.Event, error)
 	CreateBooking(tx *sql.Tx, ctx context.Context, booking *models.Booking) (int64, error)
-	UpdateEventSeats(tx *sql.Tx, ctx context.Context, eventDBID int64) error
+	UpdateEventSeats(tx *sql.Tx, ctx context.Context, increment bool, eventID int64) error
 	GetBookingForConfirm(tx *sql.Tx, ctx context.Context, userID int64, eventUUID string) (*models.Booking, error)
 	UpdateBookingStatus(tx *sql.Tx, ctx context.Context, bookingID int64, status string) error
+	CancelBooking(tx *sql.Tx, ctx context.Context, bookingID int64) (int64, error)
+	GetInfo(ctx context.Context, eventUUID string) (*models.Event, error)
 	Close()
 }
 

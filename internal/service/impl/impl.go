@@ -3,6 +3,7 @@ package impl
 import (
 	"Kairos/internal/broker"
 	"Kairos/internal/logger"
+	"Kairos/internal/notifier"
 	"Kairos/internal/repository"
 )
 
@@ -16,11 +17,12 @@ func NewAuthService(logger logger.Logger, storage repository.AuthStorage) *AuthS
 }
 
 type CoreService struct {
-	logger  logger.Logger
-	broker  broker.Broker
-	storage repository.CoreStorage
+	logger   logger.Logger
+	broker   broker.Broker
+	storage  repository.CoreStorage
+	notifier notifier.Notifier
 }
 
-func NewCoreService(logger logger.Logger, broker broker.Broker, storage repository.CoreStorage) *CoreService {
-	return &CoreService{logger: logger, broker: broker, storage: storage}
+func NewCoreService(logger logger.Logger, broker broker.Broker, storage repository.CoreStorage, notifier notifier.Notifier) *CoreService {
+	return &CoreService{logger: logger, broker: broker, storage: storage, notifier: notifier}
 }

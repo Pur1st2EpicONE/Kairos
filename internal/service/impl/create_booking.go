@@ -11,6 +11,8 @@ import (
 	"github.com/lib/pq"
 )
 
+const created = "Booking created"
+
 func (c *CoreService) CreateBooking(ctx context.Context, userID int64, eventID string) (int64, error) {
 
 	var bookingID int64
@@ -33,11 +35,19 @@ func (c *CoreService) CreateBooking(ctx context.Context, userID int64, eventID s
 			return c.wrap(innerErr)
 		}
 
+		booking.ID = bookingID
+
 		if err := c.broker.Produce(booking); err != nil {
 			return c.wrap(err)
 		}
 
-		return c.storage.UpdateEventSeats(tx, ctx, event.DBID)
+		go func() {
+			if err := c.notifier.Notify(models.Notification{Channel: channel, Message: created}); err != nil {
+				c.logger.LogError("service — failed to send booking expiration notification", err, "layer", "service.impl")
+			}
+		}()
+
+		return c.storage.UpdateEventSeats(tx, ctx, false, event.DBID)
 
 	})
 

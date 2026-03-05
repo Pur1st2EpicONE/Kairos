@@ -16,8 +16,7 @@ func (c *CoreStorage) GetBookingForConfirm(tx *sql.Tx, ctx context.Context, user
 	FROM bookings b
 	JOIN events e 
 	ON b.event_id = e.id
-	WHERE b.user_id = $1 
-	AND e.uuid = $2 
+	WHERE b.user_id = $1 AND e.uuid = $2 
 	ORDER BY b.id DESC
 	LIMIT 1
 	FOR UPDATE OF b`,

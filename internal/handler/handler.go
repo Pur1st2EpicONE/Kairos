@@ -31,6 +31,8 @@ func NewHandler(config config.Server, service *service.Service) http.Handler {
 	auth.POST("/sign-up", handlerV1.SignUp)
 	auth.POST("/sign-in", handlerV1.SignIn)
 
+	apiV1.GET("/events/:id", handlerV1.GetInfo)
+
 	protected := apiV1.Group("/")
 	protected.Use(authJWT(service.AuthService))
 

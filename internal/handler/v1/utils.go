@@ -76,12 +76,14 @@ func mapErrorToStatus(err error) (int, string) {
 		return http.StatusBadRequest, err.Error()
 
 	case errors.Is(err, errs.ErrBookingNotFound),
+		errors.Is(err, errs.ErrEventNotFound),
 		errors.Is(err, errs.ErrNotificationNotFound):
 		return http.StatusNotFound, err.Error()
 
 	case errors.Is(err, errs.ErrUserAlreadyExists),
 		errors.Is(err, errs.ErrAlreadyConfirmed),
-		errors.Is(err, errs.ErrBookingAlreadyExists):
+		errors.Is(err, errs.ErrBookingAlreadyExists),
+		errors.Is(err, errs.ErrEventFull):
 		return http.StatusConflict, err.Error()
 
 	case errors.Is(err, errs.ErrInvalidToken),

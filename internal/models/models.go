@@ -31,24 +31,16 @@ type Booking struct {
 }
 
 type Notification struct {
-	ID          string    `json:"id"`            // Unique identifier for the notification
-	Channel     string    `json:"channel"`       // Delivery channel
-	Subject     string    `json:"subject"`       // Subject or title of the notification
-	Message     string    `json:"message"`       // Main content of the notification
-	Status      string    `json:"status"`        // Current status of the notification
-	SendAt      time.Time `json:"send_at"`       // Scheduled UTC time for sending
-	SendAtLocal string    `json:"send_at_local"` // Scheduled time in local timezone
-	SendTo      []string  `json:"send_to"`       // List of recipients
-	UpdatedAt   time.Time `json:"updated_at"`    // Last update timestamp
+	Channel string   `json:"channel"` // Delivery channel
+	Subject string   `json:"subject"` // Subject or title of the notification
+	Message string   `json:"message"` // Main content of the notification
+	SendTo  []string `json:"send_to"` // List of recipients
 }
 
 const (
-	StatusPending   = "pending"  // Notification is created but not yet sent
-	StatusCanceled  = "canceled" // Notification has been canceled
+	StatusPending   = "pending"
 	StatusConfirmed = "confirmed"
 	StatusExpired   = "expired"
-	StatusLate      = "running late" // Notification delayed past its scheduled send time
-	StatusSent      = "sent"         // Notification was successfully sent
 )
 
 const (
