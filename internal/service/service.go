@@ -2,6 +2,7 @@ package service
 
 import (
 	"Kairos/internal/broker"
+	"Kairos/internal/config"
 	"Kairos/internal/logger"
 	"Kairos/internal/models"
 	"Kairos/internal/notifier"
@@ -23,6 +24,7 @@ type CoreService interface {
 	ConfirmBooking(ctx context.Context, userID int64, eventID string) error
 	CancelBooking(ctx context.Context, bookingID int64) error
 	GetInfo(ctx context.Context, eventID string) (*models.Event, error)
+	GetAllEvents(ctx context.Context) []models.Event
 }
 
 type Service struct {
@@ -30,9 +32,9 @@ type Service struct {
 	CoreService
 }
 
-func NewService(logger logger.Logger, broker broker.Broker, storage *repository.Storage, notifier notifier.Notifier) *Service {
+func NewService(logger logger.Logger, config config.Service, broker broker.Broker, storage *repository.Storage, notifier notifier.Notifier) *Service {
 	return &Service{
-		AuthService: impl.NewAuthService(logger, storage.AuthStorage),
+		AuthService: impl.NewAuthService(logger, config, storage.AuthStorage),
 		CoreService: impl.NewCoreService(logger, broker, storage.CoreStorage, notifier),
 	}
 }

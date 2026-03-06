@@ -17,7 +17,7 @@ func (c *CoreService) CreateBooking(ctx context.Context, userID int64, eventID s
 
 	var bookingID int64
 
-	err := c.storage.Transact(ctx, func(tx *sql.Tx, ctx context.Context) error {
+	err := c.storage.Transaction(ctx, func(tx *sql.Tx, ctx context.Context) error {
 
 		event, err := c.storage.GetEventForBooking(tx, ctx, eventID)
 		if err != nil {
@@ -42,12 +42,16 @@ func (c *CoreService) CreateBooking(ctx context.Context, userID int64, eventID s
 		}
 
 		go func() {
-			if err := c.notifier.Notify(models.Notification{Channel: channel, Message: created}); err != nil {
+			if err := c.notifier.Notify(models.Notification{Channel: models.Telegram, Message: created}); err != nil {
 				c.logger.LogError("service — failed to send booking expiration notification", err, "layer", "service.impl")
 			}
 		}()
 
-		return c.storage.UpdateEventSeats(tx, ctx, false, event.DBID)
+		if err := c.storage.UpdateEventSeats(tx, ctx, false, event.DBID); err != nil {
+			c.logger.LogError("service — failed to update event seats", err, "layer", "service.impl")
+		}
+
+		return nil
 
 	})
 
@@ -59,14 +63,14 @@ func (c *CoreService) CreateBooking(ctx context.Context, userID int64, eventID s
 }
 
 func initBooking(userID int64, eventID int64, bookingTTL time.Duration) *models.Booking {
-
 	now := time.Now()
 	return &models.Booking{
 		UserID:    userID,
 		EventID:   eventID,
 		Status:    models.StatusPending,
 		CreatedAt: now,
-		ExpiresAt: now.Add(bookingTTL)}
+		ExpiresAt: now.Add(bookingTTL),
+	}
 }
 
 func (c *CoreService) wrap(err error) error {

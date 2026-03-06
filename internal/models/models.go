@@ -1,5 +1,3 @@
-// Package models defines the core data structures used in Chronos,
-// including notifications and their associated constants.
 package models
 
 import "time"
@@ -31,10 +29,8 @@ type Booking struct {
 }
 
 type Notification struct {
-	Channel string   `json:"channel"` // Delivery channel
-	Subject string   `json:"subject"` // Subject or title of the notification
-	Message string   `json:"message"` // Main content of the notification
-	SendTo  []string `json:"send_to"` // List of recipients
+	Channel string `json:"channel"`
+	Message string `json:"message"`
 }
 
 const (
@@ -44,13 +40,5 @@ const (
 )
 
 const (
-	Email    = "email"    // Email channel
-	Stdout   = "stdout"   // Standard output
-	Telegram = "telegram" // Telegram bot channel
-)
-
-const (
-	MaxEmailLength   = 254 // Maximum length for email addresses
-	MaxSubjectLength = 254 // Maximum length for email subject
-	MaxMessageLength = 254 // Maximum length for message content
+	Telegram = "telegram"
 )

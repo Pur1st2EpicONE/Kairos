@@ -10,21 +10,19 @@ import (
 
 func (h *Handler) ConfirmBooking(c *gin.Context) {
 
-	userIDRaw := c.Request.Context().Value("userID")
-	userID, ok := userIDRaw.(int64)
+	userID, ok := c.Request.Context().Value("userID").(int64)
 	if !ok {
 		RespondError(c, errs.ErrInvalidToken)
 		return
 	}
 
-	eventIDStr := c.Param("id")
-	if err := helpers.ParseUUID(eventIDStr); err != nil {
-
+	eventID := c.Param("id")
+	if err := helpers.ParseUUID(eventID); err != nil {
 		RespondError(c, errs.ErrInvalidEventID)
 		return
 	}
 
-	if err := h.service.ConfirmBooking(c.Request.Context(), userID, eventIDStr); err != nil {
+	if err := h.service.ConfirmBooking(c.Request.Context(), userID, eventID); err != nil {
 		RespondError(c, err)
 		return
 	}

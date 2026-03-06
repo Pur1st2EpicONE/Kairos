@@ -15,8 +15,8 @@ func (h *Handler) SignUp(c *ginext.Context) {
 		return
 	}
 
-	user := models.User{Login: request.Login, Password: request.Password}
-	userID, err := h.service.CreateUser(c.Request.Context(), user)
+	userID, err := h.service.CreateUser(c.Request.Context(),
+		models.User{Login: request.Login, Password: request.Password})
 	if err != nil {
 		RespondError(c, err)
 		return

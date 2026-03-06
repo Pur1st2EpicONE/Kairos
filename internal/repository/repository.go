@@ -18,8 +18,7 @@ type AuthStorage interface {
 }
 
 type CoreStorage interface {
-	Transact(ctx context.Context, fn func(tx *sql.Tx, ctx context.Context) error) error
-	BeginTx(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error)
+	Transaction(ctx context.Context, fn func(tx *sql.Tx, ctx context.Context) error) error
 	CreateEvent(ctx context.Context, event *models.Event) error
 	GetEventForBooking(tx *sql.Tx, ctx context.Context, eventUUID string) (*models.Event, error)
 	CreateBooking(tx *sql.Tx, ctx context.Context, booking *models.Booking) (int64, error)
@@ -28,6 +27,7 @@ type CoreStorage interface {
 	UpdateBookingStatus(tx *sql.Tx, ctx context.Context, bookingID int64, status string) error
 	CancelBooking(tx *sql.Tx, ctx context.Context, bookingID int64) (int64, error)
 	GetInfo(ctx context.Context, eventUUID string) (*models.Event, error)
+	GetAllEvents(ctx context.Context) ([]models.Event, error)
 	Close()
 }
 
@@ -43,8 +43,6 @@ func NewStorage(logger logger.Logger, config config.Storage, db *dbpg.DB) *Stora
 	}
 }
 
-// ConnectDB establishes a connection to the Postgres database using the provided configuration.
-// It returns a dbpg.DB instance ready for queries.
 func ConnectDB(config config.Storage) (*dbpg.DB, error) {
 
 	options := &dbpg.Options{

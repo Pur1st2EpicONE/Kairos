@@ -8,11 +8,9 @@ import (
 )
 
 func (a *AuthService) CreateToken(userID int64) (string, error) {
-	claims := jwt.StandardClaims{
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
 		Subject:   strconv.FormatInt(userID, 10),
-		ExpiresAt: time.Now().Add(30 * time.Minute).Unix(),
-		IssuedAt:  time.Now().Unix(),
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte("abobus"))
+		ExpiresAt: time.Now().Add(a.config.TokenTTL).Unix(),
+		IssuedAt:  time.Now().Unix()})
+	return token.SignedString([]byte(a.config.TokenSignedString))
 }

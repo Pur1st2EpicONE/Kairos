@@ -8,7 +8,6 @@ import (
 func (c *CoreStorage) CancelBooking(tx *sql.Tx, ctx context.Context, bookingID int64) (int64, error) {
 
 	var eventID int64
-
 	err := tx.QueryRowContext(ctx, `
 
 	UPDATE bookings
@@ -22,4 +21,5 @@ func (c *CoreStorage) CancelBooking(tx *sql.Tx, ctx context.Context, bookingID i
 	}
 
 	return eventID, nil
+
 }

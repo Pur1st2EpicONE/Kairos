@@ -6,32 +6,29 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (a *AuthService) GetUserId(ctx context.Context, user models.User) (int64, error) {
+func (a *AuthService) GetUserId(ctx context.Context, allegedUser models.User) (int64, error) {
 
-	if user.Login == "" || user.Password == "" {
-		fmt.Println("empty login or pass")
-		return 0, errs.ErrInvalidCredentials
+	if err := validateUser(allegedUser); err != nil {
+		return 0, err
 	}
 
-	user2, err := a.storage.GetUserByLogin(ctx, user.Login)
+	realUser, err := a.storage.GetUserByLogin(ctx, allegedUser.Login)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			fmt.Println(err)
 			return 0, errs.ErrInvalidCredentials
 		}
-		return 0, fmt.Errorf("failed to get user: %w", err)
+		a.logger.LogError("service — failed to get userID by login", err, "layer", "service.impl")
+		return 0, err
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(user2.Password), []byte(user.Password)); err != nil {
-		fmt.Println("CompareHashAndPassword", err)
+	if err := bcrypt.CompareHashAndPassword([]byte(realUser.Password), []byte(allegedUser.Password)); err != nil {
 		return 0, errs.ErrInvalidCredentials
 	}
 
-	return int64(user2.ID), nil
+	return int64(realUser.ID), nil
 
 }

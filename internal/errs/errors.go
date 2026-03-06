@@ -3,51 +3,40 @@ package errs
 import "errors"
 
 var (
-	ErrInvalidJSON           = errors.New("invalid JSON format")
-	ErrInvalidNotificationID = errors.New("missing or invalid notification ID")
-	ErrMissingChannel        = errors.New("channel is required")
-	ErrUnsupportedChannel    = errors.New("unsupported channel")
-	ErrMissingDate           = errors.New("date is required")
-	ErrInvalidDate           = errors.New("invalid date format, expected RFC3339")
-	ErrDateInPast            = errors.New("date cannot be in the past")
-	ErrDateTooFar            = errors.New("date is too far in the future")
-	ErrDateTooSoon           = errors.New("date is too soon")
+	ErrInvalidJSON = errors.New("invalid JSON format") // invalid JSON format
 
-	ErrMissingTitle  = errors.New("title is required")
-	ErrTitleTooShort = errors.New("title is too short")
-	ErrTitleTooLong  = errors.New("title is too long")
+	ErrMissingDate = errors.New("event date is required")                              // event date is required
+	ErrInvalidDate = errors.New("invalid event date format, expected RFC3339")         // invalid event date format, expected RFC3339
+	ErrDateInPast  = errors.New("event date cannot be in the past")                    // event date cannot be in the past
+	ErrDateTooFar  = errors.New("event date cannot be more than 1 year in the future") // event date cannot be more than 1 year in the future
+	ErrDateTooSoon = errors.New("event date must be at least 24 hours in the future")  // event date must be at least 24 hours in the future
 
-	ErrDescriptionTooLong = errors.New("description is too long")
+	ErrMissingTitle       = errors.New("event title is required")                                     // event title is required
+	ErrTitleTooShort      = errors.New("event title must be at least 3 characters long")              // event title must be at least 3 characters long
+	ErrTitleTooLong       = errors.New("event title exceeds maximum length of 100 characters")        // event title exceeds maximum length of 100 characters
+	ErrDescriptionTooLong = errors.New("event description exceeds maximum length of 1000 characters") // event description exceeds maximum length of 1000 characters
 
-	ErrInvalidSeatCount = errors.New("total seats must be greater than zero")
-	ErrTooManySeats     = errors.New("total seats exceeds maximum allowed")
+	ErrInvalidSeatCount = errors.New("total seats must be greater than zero")       // total seats must be greater than zero
+	ErrTooManySeats     = errors.New("total seats exceeds maximum allowed of 1000") // total seats exceeds maximum allowed of 1000
 
-	ErrMissingSendTo       = errors.New("send_to is required")
-	ErrInvalidEmailFormat  = errors.New("invalid email format")
-	ErrMissingEmailSubject = errors.New("email subject is required")
-	ErrEmailSubjectTooLong = errors.New("email subject is too long")
-	ErrRecipientTooLong    = errors.New("recipient exceeds maximum length")
+	ErrInternal = errors.New("internal server error") // internal server error
 
-	ErrNotificationNotFound = errors.New("notification with given ID not found")
-	ErrAlreadyCanceled      = errors.New("notification is already canceled")
-	ErrCannotCancel         = errors.New("notification cannot be canceled in its current state")
+	ErrUserAlreadyExists  = errors.New("user already exists")                 // user already exists
+	ErrInvalidCredentials = errors.New("invalid login or password")           // invalid login or password
+	ErrEmptyLogin         = errors.New("login field can not be empty")        // login field can not be empty
+	ErrEmptyPassword      = errors.New("password field can not be empty")     // password field can not be empty
+	ErrEmptyAuthHeader    = errors.New("authorization header is empty")       // authorization header is empty
+	ErrInvalidAuthHeader  = errors.New("invalid authorization header format") // invalid authorization header format
+	ErrInvalidToken       = errors.New("invalid or expired token")            // invalid or expired token
+	ErrInvalidUserID      = errors.New("invalid userID")                      // invalid userID
 
-	ErrInternal             = errors.New("internal server error")
-	ErrUrgentDeliveryFailed = errors.New("cannot schedule notification for immediate delivery — service is temporarily unavailable")
+	ErrInvalidEventID = errors.New("event_id is empty or invalid") // event_id is empty or invalid
+	ErrEventFull      = errors.New("event is full: no seats left") // event is full: no seats left
+	ErrEventNotFound  = errors.New("event not found")              // event not found
 
-	ErrUserAlreadyExists  = errors.New("user already exists")
-	ErrInvalidCredentials = errors.New("invalid login or password")
-
-	ErrEmptyAuthHeader      = errors.New("empty auth header")
-	ErrInvalidAuthHeader    = errors.New("invalid auth header")
-	ErrInvalidToken         = errors.New("invalid token")
-	ErrInvalidEventID       = errors.New("empty or invalid event_id")
-	ErrEventFull            = errors.New("no seats left for the event")
-	ErrEventNotFound        = errors.New("event not found")
-	ErrBookingAlreadyExists = errors.New("booking already exists")
-	ErrAlreadyConfirmed     = errors.New("booking already confirmed")
-	ErrInvalidUserID        = errors.New("invalid user_id: user does not exist")
-	ErrInvalidBookingTTL    = errors.New("invalid booking expiration time")
-	ErrBookingExpired       = errors.New("booking expired")
-	ErrBookingNotFound      = errors.New("booking not found")
+	ErrBookingAlreadyExists = errors.New("booking already exists for this user and event") // booking already exists for this user and event
+	ErrAlreadyConfirmed     = errors.New("booking is already confirmed")                   // booking is already confirmed
+	ErrInvalidBookingTTL    = errors.New("invalid booking expiration time")                // invalid booking expiration time
+	ErrBookingExpired       = errors.New("booking has expired")                            // booking has expired
+	ErrBookingNotFound      = errors.New("booking not found")                              // booking not found
 )

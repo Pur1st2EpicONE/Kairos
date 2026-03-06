@@ -6,7 +6,8 @@ import (
 	"fmt"
 )
 
-func (c *CoreStorage) Transact(ctx context.Context, fn func(tx *sql.Tx, ctx context.Context) error) error {
+func (c *CoreStorage) Transaction(ctx context.Context, fn func(tx *sql.Tx, ctx context.Context) error) error {
+
 	tx, err := c.db.BeginTx(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -20,5 +21,7 @@ func (c *CoreStorage) Transact(ctx context.Context, fn func(tx *sql.Tx, ctx cont
 	if err := tx.Commit(); err != nil {
 		return fmt.Errorf("failed to commit transaction: %w", err)
 	}
+
 	return nil
+
 }

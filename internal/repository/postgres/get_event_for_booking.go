@@ -9,9 +9,6 @@ import (
 
 func (c *CoreStorage) GetEventForBooking(tx *sql.Tx, ctx context.Context, eventUUID string) (*models.Event, error) {
 
-	event := new(models.Event)
-	var ttlSeconds int
-
 	row := tx.QueryRowContext(ctx, `
 
     SELECT id, userid, uuid, title, description, event_date, available_seats, booking_ttl
@@ -20,6 +17,9 @@ func (c *CoreStorage) GetEventForBooking(tx *sql.Tx, ctx context.Context, eventU
     FOR UPDATE`,
 
 		eventUUID)
+	event := new(models.Event)
+	var ttlSeconds int
+
 	err := row.Scan(
 		&event.DBID,
 		&event.UserID,

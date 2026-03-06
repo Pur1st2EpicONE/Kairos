@@ -11,7 +11,7 @@ import (
 
 func (c *CoreService) CreateEvent(ctx context.Context, event *models.Event) (string, error) {
 
-	if err := validateCreate(event); err != nil {
+	if err := validateEvent(event); err != nil {
 		return "", err
 	}
 

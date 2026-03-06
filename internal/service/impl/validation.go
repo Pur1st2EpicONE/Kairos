@@ -7,7 +7,17 @@ import (
 	"time"
 )
 
-func validateCreate(event *models.Event) error {
+func validateUser(user models.User) error {
+	if user.Login == "" {
+		return errs.ErrEmptyLogin
+	}
+	if user.Password == "" {
+		return errs.ErrEmptyPassword
+	}
+	return nil
+}
+
+func validateEvent(event *models.Event) error {
 
 	if err := validateTitle(event.Title); err != nil {
 		return err
@@ -76,7 +86,7 @@ func validateDate(t time.Time) error {
 	if t.Before(now) {
 		return errs.ErrDateInPast
 	}
-	if t.Before(now.Add(5 * time.Minute)) {
+	if t.Before(now.Add(24 * time.Hour)) {
 		return errs.ErrDateTooSoon
 	}
 

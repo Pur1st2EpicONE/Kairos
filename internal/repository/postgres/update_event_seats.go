@@ -13,14 +13,13 @@ func (c *CoreStorage) UpdateEventSeats(tx *sql.Tx, ctx context.Context, incremen
 		op = "+"
 	}
 
-	query := fmt.Sprintf(`
+	_, err := tx.ExecContext(ctx, fmt.Sprintf(`
         
 	UPDATE events
     SET available_seats = available_seats %s 1
     WHERE id = $1`,
 
-		op)
-	_, err := tx.ExecContext(ctx, query, eventID)
+		op), eventID)
 
 	return err
 

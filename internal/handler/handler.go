@@ -1,5 +1,3 @@
-// Package handler provides HTTP handlers for the Kairos application.
-// It sets up routes, static file serving, and HTML templates for the web interface.
 package handler
 
 import (
@@ -7,6 +5,7 @@ import (
 	"Kairos/internal/errs"
 	"Kairos/internal/service"
 	"context"
+	"html/template"
 	"net/http"
 	"strings"
 
@@ -17,6 +16,7 @@ import (
 )
 
 const templatePath = "web/templates/index.html"
+const AuthHeader = "Authorization"
 
 func NewHandler(config config.Server, service *service.Service) http.Handler {
 
@@ -32,6 +32,7 @@ func NewHandler(config config.Server, service *service.Service) http.Handler {
 	auth.POST("/sign-in", handlerV1.SignIn)
 
 	apiV1.GET("/events/:id", handlerV1.GetInfo)
+	apiV1.GET("/", homePage(template.Must(template.ParseFiles(templatePath)), service.CoreService))
 
 	protected := apiV1.Group("/")
 	protected.Use(authJWT(service.AuthService))
@@ -45,9 +46,10 @@ func NewHandler(config config.Server, service *service.Service) http.Handler {
 }
 
 func authJWT(service service.AuthService) gin.HandlerFunc {
+
 	return func(c *gin.Context) {
 
-		authHeader := c.GetHeader("Authorization")
+		authHeader := c.GetHeader(AuthHeader)
 		if authHeader == "" {
 			v1.RespondError(c, errs.ErrEmptyAuthHeader)
 			return
@@ -61,12 +63,23 @@ func authJWT(service service.AuthService) gin.HandlerFunc {
 
 		userID, err := service.ParseToken(parts[1])
 		if err != nil {
-			v1.RespondError(c, errs.ErrInvalidToken)
+			v1.RespondError(c, err)
 			return
 		}
 
 		c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), "userID", userID))
 		c.Next()
 
+	}
+
+}
+
+func homePage(tmpl *template.Template, service service.CoreService) func(c *ginext.Context) {
+	return func(c *ginext.Context) {
+		events := service.GetAllEvents(c.Request.Context())
+		c.Header("Content-Type", "text/html")
+		if err := tmpl.Execute(c.Writer, map[string]any{"Events": events}); err != nil {
+			c.String(http.StatusInternalServerError, errs.ErrInternal.Error())
+		}
 	}
 }

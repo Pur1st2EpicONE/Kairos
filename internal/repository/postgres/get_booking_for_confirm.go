@@ -8,8 +8,6 @@ import (
 
 func (c *CoreStorage) GetBookingForConfirm(tx *sql.Tx, ctx context.Context, userID int64, eventUUID string) (*models.Booking, error) {
 
-	booking := new(models.Booking)
-
 	row := tx.QueryRowContext(ctx, `
 
 	SELECT b.id, b.user_id, b.event_id, b.status, b.created_at, b.expires_at
@@ -22,6 +20,8 @@ func (c *CoreStorage) GetBookingForConfirm(tx *sql.Tx, ctx context.Context, user
 	FOR UPDATE OF b`,
 
 		userID, eventUUID)
+	booking := new(models.Booking)
+
 	err := row.Scan(
 		&booking.ID,
 		&booking.UserID,

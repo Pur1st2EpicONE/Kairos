@@ -3,18 +3,26 @@ package postgres
 import (
 	"Kairos/internal/models"
 	"context"
+	"fmt"
+
+	"github.com/wb-go/wbf/retry"
 )
 
 func (s *AuthStorage) GetUserByLogin(ctx context.Context, login string) (models.User, error) {
 
-	var user models.User
-	err := s.db.QueryRowContext(ctx, `
+	row, err := s.db.QueryRowWithRetry(ctx, retry.Strategy(s.config.QueryRetryStrategy), `
 
     SELECT id, username, password
     FROM users
     WHERE username = $1`,
 
-		login).Scan(&user.ID, &user.Login, &user.Password)
+		login)
+	if err != nil {
+		return models.User{}, fmt.Errorf("failed to query row %w", err)
+	}
+
+	var user models.User
+	err = row.Scan(&user.ID, &user.Login, &user.Password)
 	if err != nil {
 		return models.User{}, err
 	}

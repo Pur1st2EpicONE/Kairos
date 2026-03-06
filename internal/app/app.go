@@ -89,18 +89,13 @@ func wireApp(db *dbpg.DB, logger logger.Logger, logFile *os.File, config config.
 		return nil, err
 	}
 
-	service := service.NewService(logger, broker, storage, notifier)
+	service := service.NewService(logger, config.Service, broker, storage, notifier)
 
 	broker.SetCancelFunc(func(ctx context.Context, bookingID int64) error {
 		return service.CancelBooking(ctx, bookingID)
 	})
 
-	server := server.NewServer(
-		logger,
-		config.Server,
-		handler.NewHandler(config.Server, service),
-		cancel,
-	)
+	server := server.NewServer(logger, config.Server, handler.NewHandler(config.Server, service), cancel)
 
 	return &App{
 		logger:  logger,

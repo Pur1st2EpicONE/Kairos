@@ -1,5 +1,3 @@
-// Package rabbitmq provides a RabbitMQ-based implementation of the Broker interface.
-// It manages message publishing, consumption, and system health monitoring.
 package rabbitmq
 
 import (
@@ -21,23 +19,19 @@ const (
 	exchangeKind = "direct"
 )
 
-// Broker is a RabbitMQ implementation of the Broker interface.
-// It holds references to logger, config, consumer, producer, cache, storage, notifier, and the underlying RabbitClient.
 type Broker struct {
-	logger     logger.Logger       // structured logger for logging broker events
-	config     config.Broker       // broker configuration
-	Consumer   *rabbitmq.Consumer  // RabbitMQ consumer instance
-	producer   *rabbitmq.Publisher // RabbitMQ publisher instance
+	logger     logger.Logger
+	config     config.Broker
+	Consumer   *rabbitmq.Consumer
+	producer   *rabbitmq.Publisher
 	cancelFunc func(ctx context.Context, bookingID int64) error
-	client     *rabbitmq.RabbitClient // underlying RabbitMQ client
+	client     *rabbitmq.RabbitClient
 }
 
 func (b *Broker) SetCancelFunc(fn func(ctx context.Context, bookingID int64) error) {
 	b.cancelFunc = fn
 }
 
-// NewBroker creates and initializes a new RabbitMQ Broker instance.
-// It sets up the RabbitMQ client, exchange, queue, producer, and consumer.
 func NewBroker(logger logger.Logger, config config.Broker, cancelFunc func(ctx context.Context, bookingID int64) error) (*Broker, error) {
 
 	client, err := rabbitmq.NewClient(rabbitmq.ClientConfig{
@@ -95,7 +89,6 @@ func NewBroker(logger logger.Logger, config config.Broker, cancelFunc func(ctx c
 
 }
 
-// Shutdown gracefully closes the underlying RabbitMQ client and logs the outcome.
 func (b *Broker) Shutdown() {
 	if err := b.client.Close(); err != nil {
 		b.logger.LogError("rabbit — failed to shutdown gracefully", err, "layer", "broker.rabbitMQ")

@@ -1,5 +1,3 @@
-// Package broker provides abstractions for message brokers used in the application.
-// It defines the Broker interface and exposes a constructor for concrete implementations.
 package broker
 
 import (

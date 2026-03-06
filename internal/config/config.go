@@ -1,5 +1,3 @@
-// Package config provides the configuration structures and loading logic for the Chronos application.
-// It supports loading configuration from YAML files, environment variables, and applies defaults.
 package config
 
 import (
@@ -10,29 +8,27 @@ import (
 	wbf "github.com/wb-go/wbf/config"
 )
 
-// Config is the top-level application configuration, containing logger, notifier, server, storage, broker, and cache settings.
 type Config struct {
-	Logger   Logger   `mapstructure:"logger"`   // logger configuration
-	Notifier Notifier `mapstructure:"notifier"` // notifier configuration
-	Server   Server   `mapstructure:"server"`   // server configuration
-	Storage  Storage  `mapstructure:"database"` // database/storage configuration
-	Broker   Broker   `mapstructure:"broker"`   // broker configuration
+	Logger   Logger   `mapstructure:"logger"`
+	Notifier Notifier `mapstructure:"notifier"`
+	Server   Server   `mapstructure:"server"`
+	Service  Service  `mapstructure:"service"`
+	Storage  Storage  `mapstructure:"database"`
+	Broker   Broker   `mapstructure:"broker"`
 }
 
-// Notifier contains credentials and settings for Telegram and Email notifications.
 type Notifier struct {
-	TelegramToken    string // Telegram bot token
-	TelegramReceiver string // Telegram chat ID
-	EmailSender      string // email sender address
-	EmailPassword    string // email password
-	EmailSMTP        string // SMTP server username/password if needed
-	EmailSMTPAddr    string // SMTP server address
+	TelegramToken    string
+	TelegramReceiver string
+	EmailSender      string
+	EmailPassword    string
+	EmailSMTP        string
+	EmailSMTPAddr    string
 }
 
-// Logger defines logging configuration.
 type Logger struct {
-	Debug  bool   `mapstructure:"debug_mode"`    // enable debug mode
-	LogDir string `mapstructure:"log_directory"` // directory for log files
+	Debug  bool   `mapstructure:"debug_mode"`
+	LogDir string `mapstructure:"log_directory"`
 }
 
 type Server struct {
@@ -45,64 +41,61 @@ type Server struct {
 	ShutdownTimeout time.Duration `mapstructure:"shutdown_timeout"`
 }
 
-// Broker contains configuration for the message broker.
+type Service struct {
+	TokenTTL          time.Duration `mapstructure:"token_ttl"`
+	TokenSignedString string
+}
+
 type Broker struct {
-	URL                 string        `mapstructure:"url"`                  // broker connection URL
-	QueueName           string        `mapstructure:"queue_name"`           // main queue name
-	ConnectionName      string        `mapstructure:"connection_name"`      // connection name
-	ConnectTimeout      time.Duration `mapstructure:"connect_timeout"`      // timeout for initial connection
-	Reconnect           Producer      `mapstructure:"reconnect"`            // reconnect retry strategy
-	Producer            Producer      `mapstructure:"producer"`             // producer retry strategy
-	Consumer            Consumer      `mapstructure:"consumer"`             // consumer retry strategy
-	CleanupInterval     time.Duration `mapstructure:"cleanup_interval"`     // interval for cleanup tasks
-	HealthcheckInterval time.Duration `mapstructure:"healthcheck_interval"` // interval for health checks
+	URL                 string        `mapstructure:"url"`
+	QueueName           string        `mapstructure:"queue_name"`
+	ConnectionName      string        `mapstructure:"connection_name"`
+	ConnectTimeout      time.Duration `mapstructure:"connect_timeout"`
+	Reconnect           Producer      `mapstructure:"reconnect"`
+	Producer            Producer      `mapstructure:"producer"`
+	Consumer            Consumer      `mapstructure:"consumer"`
+	CleanupInterval     time.Duration `mapstructure:"cleanup_interval"`
+	HealthcheckInterval time.Duration `mapstructure:"healthcheck_interval"`
 }
 
-// Producer defines retry and message queue settings for producer operations.
 type Producer struct {
-	Attempts        int           `mapstructure:"attempts"`          // number of retry attempts
-	Delay           time.Duration `mapstructure:"delay"`             // delay between retries
-	Backoff         float64       `mapstructure:"backoff"`           // backoff multiplier
-	MessageQueueTTL time.Duration `mapstructure:"message_queue_ttl"` // queue TTL for messages
+	Attempts        int           `mapstructure:"attempts"`
+	Delay           time.Duration `mapstructure:"delay"`
+	Backoff         float64       `mapstructure:"backoff"`
+	MessageQueueTTL time.Duration `mapstructure:"message_queue_ttl"`
 }
 
-// Consumer defines retry and consumption settings for consumer operations.
 type Consumer struct {
-	Attempts      int           `mapstructure:"attempts"`       // number of retry attempts
-	Delay         time.Duration `mapstructure:"delay"`          // delay between retries
-	Backoff       float64       `mapstructure:"backoff"`        // backoff multiplier
-	ConsumerTag   string        `mapstructure:"consumer_tag"`   // consumer tag
-	AutoAck       bool          `mapstructure:"auto_ack"`       // auto-acknowledge messages
-	Workers       int           `mapstructure:"workers"`        // number of worker goroutines
-	PrefetchCount int           `mapstructure:"prefetch_count"` // prefetch count for QoS
+	Attempts      int           `mapstructure:"attempts"`
+	Delay         time.Duration `mapstructure:"delay"`
+	Backoff       float64       `mapstructure:"backoff"`
+	ConsumerTag   string        `mapstructure:"consumer_tag"`
+	AutoAck       bool          `mapstructure:"auto_ack"`
+	Workers       int           `mapstructure:"workers"`
+	PrefetchCount int           `mapstructure:"prefetch_count"`
 }
 
-// Storage defines database connection and query retry configuration.
 type Storage struct {
-	Dialect            string        `mapstructure:"goose_dialect"`              // Goose migration dialect
-	MigrationsDir      string        `mapstructure:"goose_migrations_directory"` // Directory for Goose migrations
-	Host               string        `mapstructure:"host"`                       // DB host
-	Port               string        `mapstructure:"port"`                       // DB port
-	Username           string        `mapstructure:"username"`                   // DB username
-	Password           string        `mapstructure:"password"`                   // DB password
-	DBName             string        `mapstructure:"dbname"`                     // database name
-	SSLMode            string        `mapstructure:"sslmode"`                    // SSL mode
-	MaxOpenConns       int           `mapstructure:"max_open_conns"`             // maximum open connections
-	MaxIdleConns       int           `mapstructure:"max_idle_conns"`             // maximum idle connections
-	ConnMaxLifetime    time.Duration `mapstructure:"conn_max_lifetime"`          // max lifetime per connection
-	RecoverLimit       int           `mapstructure:"recover_limit"`              // limit for recovery operations
-	QueryRetryStrategy Producer      `mapstructure:"query_retry_strategy"`       // query retry strategy
-	RetentionStrategy  Retention     `mapstructure:"retention_strategy"`         // retention durations
+	Dialect            string             `mapstructure:"goose_dialect"`              // Goose migration dialect
+	MigrationsDir      string             `mapstructure:"goose_migrations_directory"` // Directory for Goose migrations
+	Host               string             `mapstructure:"host"`                       // DB host
+	Port               string             `mapstructure:"port"`                       // DB port
+	Username           string             `mapstructure:"username"`                   // DB username
+	Password           string             `mapstructure:"password"`                   // DB password
+	DBName             string             `mapstructure:"dbname"`                     // database name
+	SSLMode            string             `mapstructure:"sslmode"`                    // SSL mode
+	MaxOpenConns       int                `mapstructure:"max_open_conns"`             // maximum open connections
+	MaxIdleConns       int                `mapstructure:"max_idle_conns"`             // maximum idle connections
+	ConnMaxLifetime    time.Duration      `mapstructure:"conn_max_lifetime"`          // max lifetime per connection
+	QueryRetryStrategy QueryRetryStrategy `mapstructure:"query_retry_strategy"`       // query retry strategy
 }
 
-// Retention specifies retention periods for notifications by status.
-type Retention struct {
-	Canceled  time.Duration // retention for canceled notifications
-	Completed time.Duration // retention for completed notifications
-	Failed    time.Duration // retention for failed notifications
+type QueryRetryStrategy struct {
+	Attempts int           `mapstructure:"attempts"`
+	Delay    time.Duration `mapstructure:"delay"`
+	Backoff  float64       `mapstructure:"backoff"`
 }
 
-// Load reads configuration from YAML files and environment variables, applies defaults, and returns a Config instance.
 func Load() (Config, error) {
 
 	cfg := wbf.New()
@@ -127,7 +120,6 @@ func Load() (Config, error) {
 
 }
 
-// loadEnvs overrides configuration fields with values from environment variables.
 func loadEnvs(conf *Config) {
 
 	conf.Storage.Username = os.Getenv("DB_USER")
@@ -136,9 +128,6 @@ func loadEnvs(conf *Config) {
 	conf.Notifier.TelegramToken = os.Getenv("TG_BOT_TOKEN")
 	conf.Notifier.TelegramReceiver = os.Getenv("TG_CHAT_ID")
 
-	conf.Notifier.EmailSender = os.Getenv("GOOGLE_APP_EMAIL")
-	conf.Notifier.EmailPassword = os.Getenv("GOOGLE_APP_PASSWORD")
-	conf.Notifier.EmailSMTP = os.Getenv("GOOGLE_APP_SMTP")
-	conf.Notifier.EmailSMTPAddr = os.Getenv("SMTP_ADDR")
+	conf.Service.TokenSignedString = os.Getenv("JWT_TOKEN_SIGNED_STRING")
 
 }

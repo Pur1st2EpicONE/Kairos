@@ -11,12 +11,10 @@ import (
 )
 
 func (b *Broker) Consume() {
-
 	if err := b.Consumer.Start(b.client.Context()); err != nil &&
 		!errors.Is(err, wbf.ErrClientClosed) && !errors.Is(err, context.Canceled) {
-		b.logger.LogError("broker — consumer returned unexpected context error", err, "layer", "broker.rabbimq")
+		b.logger.LogError("consumer — unexpected context error", err, "layer", "broker.rabbitMQ")
 	}
-
 }
 
 func (b *Broker) handler(ctx context.Context, msg amqp091.Delivery) error {

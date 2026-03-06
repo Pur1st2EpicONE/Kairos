@@ -10,14 +10,14 @@ import (
 
 func (c *CoreService) ConfirmBooking(ctx context.Context, userID int64, eventID string) error {
 
-	return c.storage.Transact(ctx, func(tx *sql.Tx, ctx context.Context) error {
+	return c.storage.Transaction(ctx, func(tx *sql.Tx, ctx context.Context) error {
 
 		booking, err := c.storage.GetBookingForConfirm(tx, ctx, userID, eventID)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return errs.ErrBookingNotFound
 			}
-			c.logger.LogError("service — failed to get booking for confirm", err, "layer", "service.impl")
+			c.logger.LogError("service — failed to get booking for confirmation", err, "layer", "service.impl")
 			return err
 		}
 

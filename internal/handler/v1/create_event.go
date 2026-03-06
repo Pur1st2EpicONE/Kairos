@@ -10,8 +10,7 @@ import (
 
 func (h *Handler) CreateEvent(c *gin.Context) {
 
-	userIDRaw := c.Request.Context().Value("userID")
-	userID, ok := userIDRaw.(int64)
+	userID, ok := c.Request.Context().Value("userID").(int64)
 	if !ok {
 		RespondError(c, errs.ErrInvalidToken)
 		return
@@ -35,7 +34,7 @@ func (h *Handler) CreateEvent(c *gin.Context) {
 		return
 	}
 
-	eventId, err := h.service.CreateEvent(c.Request.Context(), &models.Event{
+	eventID, err := h.service.CreateEvent(c.Request.Context(), &models.Event{
 		UserID:      userID,
 		Title:       request.Title,
 		Description: request.Description,
@@ -48,6 +47,6 @@ func (h *Handler) CreateEvent(c *gin.Context) {
 		return
 	}
 
-	respondOK(c, eventId)
+	respondOK(c, eventID)
 
 }

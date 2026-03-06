@@ -1,30 +1,32 @@
 package postgres
 
 import (
-	"Kairos/internal/errs"
 	"Kairos/internal/models"
 	"context"
+	"fmt"
 
-	"github.com/lib/pq"
+	"github.com/wb-go/wbf/retry"
 )
 
 func (s *AuthStorage) CreateUser(ctx context.Context, user models.User) (int64, error) {
 
-	var insertedID int64
-	err := s.db.QueryRowContext(ctx, `
+	var userID int64
+	row, err := s.db.QueryRowWithRetry(ctx, retry.Strategy(s.config.QueryRetryStrategy), `
 
     INSERT INTO users (username, password)
     VALUES ($1, $2)
     RETURNING id;`,
 
-		user.Login, user.Password).Scan(&insertedID)
+		user.Login, user.Password)
 	if err != nil {
-		if pqErr, ok := err.(*pq.Error); ok && pqErr.Code == "23505" {
-			return 0, errs.ErrUserAlreadyExists
-		}
+		return 0, fmt.Errorf("failed to query row %w", err)
+	}
+
+	err = row.Scan(&userID)
+	if err != nil {
 		return 0, err
 	}
 
-	return insertedID, nil
+	return userID, nil
 
 }

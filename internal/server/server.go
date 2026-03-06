@@ -1,4 +1,3 @@
-// Package server provides an abstraction for running and managing the HTTP server.
 package server
 
 import (

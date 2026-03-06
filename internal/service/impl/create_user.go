@@ -1,18 +1,32 @@
 package impl
 
 import (
+	"Kairos/internal/errs"
 	"Kairos/internal/models"
 	"context"
-	"fmt"
 
+	"github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func (a *AuthService) CreateUser(ctx context.Context, user models.User) (int64, error) {
+
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return 0, fmt.Errorf("failed to hash user password: %w", err)
+		a.logger.LogError("service — failed to hash user password", err, "layer", "service.impl")
+		return 0, err
 	}
 	user.Password = string(passwordHash)
-	return a.storage.CreateUser(ctx, user)
+
+	userID, err := a.storage.CreateUser(ctx, user)
+	if err != nil {
+		if pqErr, ok := err.(*pq.Error); ok && pqErr.Code == "23505" {
+			return 0, errs.ErrUserAlreadyExists
+		}
+		a.logger.LogError("service — failed to create new user", err, "layer", "service.impl")
+		return 0, err
+	}
+
+	return userID, nil
+
 }

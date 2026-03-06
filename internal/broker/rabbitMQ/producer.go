@@ -30,7 +30,7 @@ func (b *Broker) Produce(booking *models.Booking) error {
 		err := b.client.DeclareQueue(strconv.FormatInt(booking.ID, 10), mainExchange, strconv.FormatInt(booking.ID, 10), false, true, true, queueArgs)
 		if err != nil {
 			if amqpErr, ok := err.(*amqp.Error); ok && amqpErr.Code == amqp.PreconditionFailed { // exception 406
-				b.logger.Debug("producer — recovered booking is already in queue, skipping",
+				b.logger.Debug("producer — booking is already in queue, skipping",
 					"bookingID", booking.ID, "layer", "broker.rabbitMQ")
 				return nil
 			}

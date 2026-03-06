@@ -9,13 +9,13 @@ import (
 
 func (h *Handler) GetInfo(c *gin.Context) {
 
-	eventIDStr := c.Param("id")
-	if err := helpers.ParseUUID(eventIDStr); err != nil {
+	eventID := c.Param("id")
+	if err := helpers.ParseUUID(eventID); err != nil {
 		RespondError(c, errs.ErrInvalidEventID)
 		return
 	}
 
-	event, err := h.service.GetInfo(c.Request.Context(), eventIDStr)
+	event, err := h.service.GetInfo(c.Request.Context(), eventID)
 	if err != nil {
 		RespondError(c, err)
 		return
