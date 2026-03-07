@@ -3,7 +3,6 @@ package postgres
 import (
 	"Kairos/internal/models"
 	"context"
-	"fmt"
 
 	"github.com/wb-go/wbf/retry"
 )
@@ -19,7 +18,7 @@ func (s *AuthStorage) CreateUser(ctx context.Context, user models.User) (int64, 
 
 		user.Login, user.Password)
 	if err != nil {
-		return 0, fmt.Errorf("failed to query row %w", err)
+		return 0, err
 	}
 
 	err = row.Scan(&userID)

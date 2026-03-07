@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <div data-event-id="{{.ID}}"></div>
+        <h1>{{.Title}}</h1>
+        <p class="description">Description: {{.Description}}</p>
+        <p class="date">Date: {{.Date.Format "2006-01-02 15:04"}}</p>
+        <p id="free-seats">Available Seats: calculating...</p>
+        <div class="button-group">
+            <button id="book-btn">Book Place</button>
+            <button id="confirm-btn">Confirm Booking</button>
+        </div>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>

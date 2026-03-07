@@ -15,14 +15,27 @@ import (
 	"github.com/wb-go/wbf/ginext"
 )
 
-const templatePath = "web/templates/index.html"
-const AuthHeader = "Authorization"
+const indexPath = "web/templates/index.html"
+const addPath = "web/templates/create_event.html"
+const loginPath = "web/templates/login.html"
+const signupPath = "web/templates/signup.html"
+const eventPath = "web/templates/event.html"
+
+const header = "Authorization"
 
 func NewHandler(config config.Server, service *service.Service) http.Handler {
 
 	handler := ginext.New("")
 
 	handler.Use(ginext.Recovery())
+
+	handler.Static("/static", "./web/static")
+
+	handler.GET("/", homePage(template.Must(template.ParseFiles(indexPath)), service.CoreService))
+	handler.GET("/add", renderPage(template.Must(template.ParseFiles(addPath))))
+	handler.GET("/login", renderPage(template.Must(template.ParseFiles(loginPath))))
+	handler.GET("/signup", renderPage(template.Must(template.ParseFiles(signupPath))))
+	handler.GET("/events/:id", eventPage(template.Must(template.ParseFiles(eventPath)), service.CoreService))
 
 	apiV1 := handler.Group("/api/v1")
 	handlerV1 := v1.NewHandler(config, *service)
@@ -32,7 +45,6 @@ func NewHandler(config config.Server, service *service.Service) http.Handler {
 	auth.POST("/sign-in", handlerV1.SignIn)
 
 	apiV1.GET("/events/:id", handlerV1.GetInfo)
-	apiV1.GET("/", homePage(template.Must(template.ParseFiles(templatePath)), service.CoreService))
 
 	protected := apiV1.Group("/")
 	protected.Use(authJWT(service.AuthService))
@@ -49,7 +61,7 @@ func authJWT(service service.AuthService) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 
-		authHeader := c.GetHeader(AuthHeader)
+		authHeader := c.GetHeader(header)
 		if authHeader == "" {
 			v1.RespondError(c, errs.ErrEmptyAuthHeader)
 			return
@@ -74,12 +86,63 @@ func authJWT(service service.AuthService) gin.HandlerFunc {
 
 }
 
-func homePage(tmpl *template.Template, service service.CoreService) func(c *ginext.Context) {
-	return func(c *ginext.Context) {
-		events := service.GetAllEvents(c.Request.Context())
+func renderPage(tmpl *template.Template) gin.HandlerFunc {
+	return func(c *gin.Context) {
 		c.Header("Content-Type", "text/html")
-		if err := tmpl.Execute(c.Writer, map[string]any{"Events": events}); err != nil {
+		if err := tmpl.Execute(c.Writer, nil); err != nil {
 			c.String(http.StatusInternalServerError, errs.ErrInternal.Error())
 		}
 	}
+}
+
+func homePage(tmpl *template.Template, service service.CoreService) gin.HandlerFunc {
+
+	return func(c *gin.Context) {
+
+		events := service.GetAllEvents(c.Request.Context())
+		eventsDTO := make([]v1.InfoResponseDTO, len(events))
+
+		for i, e := range events {
+			eventsDTO[i] = v1.InfoResponseDTO{
+				ID:          e.ID,
+				Title:       e.Title,
+				Description: e.Description,
+				Date:        e.Date,
+				Seats:       e.Seats,
+			}
+		}
+
+		c.Header("Content-Type", "text/html")
+		if err := tmpl.Execute(c.Writer, map[string]any{"Events": eventsDTO}); err != nil {
+			c.String(http.StatusInternalServerError, errs.ErrInternal.Error())
+		}
+
+	}
+
+}
+
+func eventPage(tmpl *template.Template, service service.CoreService) gin.HandlerFunc {
+
+	return func(c *gin.Context) {
+
+		id := c.Param("id")
+		event, err := service.GetInfo(c.Request.Context(), id)
+		if err != nil {
+			v1.RespondError(c, err)
+			return
+		}
+
+		c.Header("Content-Type", "text/html")
+		if err := tmpl.Execute(c.Writer, v1.InfoResponseDTO{
+			ID:          id,
+			Title:       event.Title,
+			Description: event.Description,
+			Date:        event.Date,
+			Seats:       event.Seats,
+		}); err != nil {
+			c.String(http.StatusInternalServerError, errs.ErrInternal.Error())
+		}
+
+	}
+
 }

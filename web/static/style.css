@@ -1,0 +1,139 @@
+/* web/static/style.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7fa;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    background-color: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 24px;
+}
+
+.form label {
+    display: block;
+    margin: 15px 0;
+    text-align: left;
+    color: #555;
+    font-weight: bold;
+}
+
+.form input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.form button {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+.form button:hover {
+    background-color: #0056b3;
+}
+
+.event-list {
+    list-style-type: none;
+    padding: 0;
+    text-align: left;
+}
+
+.event-list li {
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.nav-links {
+    margin-top: 30px;
+    font-size: 14px;
+}
+
+.nav-links a, .nav-links button {
+    color: #007bff;
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+.nav-links a:hover, .nav-links button:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.description, .date, #free-seats {
+    text-align: left;
+    color: #555;
+    margin: 15px 0;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+}
+
+.button-group button {
+    flex: 1;
+    margin: 0 10px;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.button-group button:hover {
+    background-color: #0056b3;
+}
+
+.note {
+    font-size: 14px;
+    color: #777;
+    margin-top: 20px;
+}
+
+.link {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.link a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.link a:hover {
+    text-decoration: underline;
+}
