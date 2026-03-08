@@ -15,6 +15,8 @@ var (
 	ErrTitleTooShort      = errors.New("event title must be at least 3 characters long")              // event title must be at least 3 characters long
 	ErrTitleTooLong       = errors.New("event title exceeds maximum length of 100 characters")        // event title exceeds maximum length of 100 characters
 	ErrDescriptionTooLong = errors.New("event description exceeds maximum length of 1000 characters") // event description exceeds maximum length of 1000 characters
+	ErrBookingTTLTooLong  = errors.New("booking TTL is too long: maximum 1 day")                      // booking TTL is too long: maximum 1 day
+	ErrBookingTTLTooShort = errors.New("booking TTL is too short: minimum 1 minute")                  // booking TTL is too short: minimum 1 minute
 
 	ErrInvalidSeatCount = errors.New("total seats must be greater than zero")       // total seats must be greater than zero
 	ErrTooManySeats     = errors.New("total seats exceeds maximum allowed of 1000") // total seats exceeds maximum allowed of 1000
@@ -22,6 +24,7 @@ var (
 	ErrInternal = errors.New("internal server error") // internal server error
 
 	ErrUserAlreadyExists  = errors.New("user already exists")                 // user already exists
+	ErrPasswordTooLong    = errors.New("password is too long")                // password is too long
 	ErrInvalidCredentials = errors.New("invalid login or password")           // invalid login or password
 	ErrEmptyLogin         = errors.New("login field can not be empty")        // login field can not be empty
 	ErrEmptyPassword      = errors.New("password field can not be empty")     // password field can not be empty

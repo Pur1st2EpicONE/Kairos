@@ -28,6 +28,9 @@ CREATE TABLE IF NOT EXISTS bookings (
 );
 
 CREATE UNIQUE INDEX active_bookings_idx ON bookings (user_id, event_id) WHERE status = 'pending';
+CREATE INDEX idx_bookings_pending_expires ON bookings (status, expires_at) WHERE status = 'pending';
+CREATE INDEX idx_bookings_user_event ON bookings (user_id, event_id);
+CREATE INDEX idx_events_userid ON events (userid);
 
 -- +goose Down
 DROP TABLE IF EXISTS bookings CASCADE;

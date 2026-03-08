@@ -9,7 +9,13 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+const bcryptMaxLen = 72
+
 func (a *AuthService) CreateUser(ctx context.Context, user models.User) (int64, error) {
+
+	if len(user.Password) > bcryptMaxLen {
+		return 0, errs.ErrPasswordTooLong
+	}
 
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {

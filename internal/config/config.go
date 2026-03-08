@@ -36,8 +36,6 @@ type Server struct {
 	ReadTimeout     time.Duration `mapstructure:"read_timeout"`
 	WriteTimeout    time.Duration `mapstructure:"write_timeout"`
 	MaxHeaderBytes  int           `mapstructure:"max_header_bytes"`
-	MaxFileSize     int64         `mapstructure:"max_file_size"`
-	MaxRequestSize  int64         `mapstructure:"max_request_size"`
 	ShutdownTimeout time.Duration `mapstructure:"shutdown_timeout"`
 }
 

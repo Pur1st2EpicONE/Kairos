@@ -59,7 +59,7 @@ func NewHandler(config config.Server, service *service.Service) http.Handler {
 
 func authJWT(service service.AuthService) gin.HandlerFunc {
 
-	return func(c *gin.Context) {
+	return func(c *ginext.Context) {
 
 		authHeader := c.GetHeader(header)
 		if authHeader == "" {
@@ -87,7 +87,7 @@ func authJWT(service service.AuthService) gin.HandlerFunc {
 }
 
 func renderPage(tmpl *template.Template) gin.HandlerFunc {
-	return func(c *gin.Context) {
+	return func(c *ginext.Context) {
 		c.Header("Content-Type", "text/html")
 		if err := tmpl.Execute(c.Writer, nil); err != nil {
 			c.String(http.StatusInternalServerError, errs.ErrInternal.Error())
@@ -97,7 +97,7 @@ func renderPage(tmpl *template.Template) gin.HandlerFunc {
 
 func homePage(tmpl *template.Template, service service.CoreService) gin.HandlerFunc {
 
-	return func(c *gin.Context) {
+	return func(c *ginext.Context) {
 
 		events := service.GetAllEvents(c.Request.Context())
 		eventsDTO := make([]v1.InfoResponseDTO, len(events))
@@ -123,7 +123,7 @@ func homePage(tmpl *template.Template, service service.CoreService) gin.HandlerF
 
 func eventPage(tmpl *template.Template, service service.CoreService) gin.HandlerFunc {
 
-	return func(c *gin.Context) {
+	return func(c *ginext.Context) {
 
 		id := c.Param("id")
 		event, err := service.GetInfo(c.Request.Context(), id)

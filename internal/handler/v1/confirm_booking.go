@@ -4,11 +4,11 @@ import (
 	"Kairos/internal/errs"
 	"Kairos/internal/models"
 
-	"github.com/gin-gonic/gin"
+	"github.com/wb-go/wbf/ginext"
 	"github.com/wb-go/wbf/helpers"
 )
 
-func (h *Handler) ConfirmBooking(c *gin.Context) {
+func (h *Handler) ConfirmBooking(c *ginext.Context) {
 
 	userID, ok := c.Request.Context().Value("userID").(int64)
 	if !ok {

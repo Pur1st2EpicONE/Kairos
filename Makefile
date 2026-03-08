@@ -4,6 +4,8 @@
 
 -include .env.example .env
 
+GOOSE_CMD = goose -dir ./migrations postgres "user=${DB_USER} password=${DB_PASSWORD} dbname=kairos-db host=localhost port=5433 sslmode=disable"
+
 all: up
 
 up:	
@@ -15,7 +17,7 @@ up:
 	if [ ! -f config.yaml ]; then cp ./configs/config.full.yaml ./config.yaml; fi
 	if [ ! -f docker-compose.yaml ]; then cp ./deployments/docker-compose.full.yaml ./docker-compose.yaml; fi
 	if [ ! -f Dockerfile ]; then cp ./deployments/Dockerfile ./Dockerfile; fi
-	docker compose up -d postgres rabbitmq app
+	COMPOSE_BAKE=true docker compose up -d postgres rabbitmq app
 	rm -f Dockerfile
 
 down:
@@ -34,13 +36,10 @@ local:
 	bash -c 'trap "exit 0" INT; go run ./cmd/kairos/main.go'
 
 migrate-up:
-	for i in $$(seq 1 10); do \
-		migrate -path ./migrations -database "postgres://${DB_USER}:${DB_PASSWORD}@localhost:5433/kairos-db?sslmode=disable" up && exit 0; \
-		echo "Retry $$i/10..."; sleep 1; \
-	done; exit 1
+	@if command -v goose > /dev/null 2>&1; then $(GOOSE_CMD) up; else echo "You need Goose migration tool to use this command!"; fi
 
 migrate-down:
-	migrate -path ./migrations -database "postgres://${DB_USER}:${DB_PASSWORD}@localhost:5433/kairos-db?sslmode=disable" down
+	@if command -v goose > /dev/null 2>&1; then $(GOOSE_CMD) down; else echo "You need Goose migration tool to use this command!"; fi
 
 test:
 	cat .env.example > .env
@@ -65,15 +64,13 @@ rabbit:
 	docker compose exec rabbitmq bash
 
 app_logs:
-	docker compose logs --tail 5 app
+	docker compose logs --tail 10 app
 
 postgres_logs:
-	docker compose logs --tail 5 postgres
+	docker compose logs --tail 10 postgres
 
 rabbit_logs:
-	docker compose logs --tail 5 rabbitmq
-_logs:
-	docker compose logs --tail 5
+	docker compose logs --tail 10 rabbitmq
 
 queues:
 	docker compose exec rabbitmq rabbitmqctl list_queues
@@ -90,14 +87,14 @@ help:
 	@echo "| down           | Stop and remove all containers, networks, and temporary files     |"
 	@echo "| reset          | Remove postgres Docker volume                                     |"
 	@echo "| local          | Start local dev environment (go 1.25.1 required)                  |"
-	@echo "| migrate-up     | Apply all database migrations                                     |"
-	@echo "| migrate-down   | Rollback all database migrations                                  |"
+	@echo "| migrate-up     | Apply all database migrations (Goose migration tool required)     |"
+	@echo "| migrate-down   | Rollback all database migrations (Goose migration tool required)  |"
 	@echo "| test           | Run unit and integration tests                                    |"
 	@echo "| postgres       | Open psql shell inside postgres container                         |"
 	@echo "| rabbit         | Open shell inside rabbitmq container                              |"
-	@echo "| app_logs       | Show last 5 lines of app logs                                     |"
-	@echo "| postgres_logs  | Show last 5 lines of postgres logs                                |"
-	@echo "| rabbit_logs    | Show last 5 lines of rabbitmq logs                                |"
+	@echo "| app_logs       | Show last 10 lines of app logs                                    |"
+	@echo "| postgres_logs  | Show last 10 lines of postgres logs                               |"
+	@echo "| rabbit_logs    | Show last 10 lines of rabbitmq logs                               |"
 	@echo "| queues         | List queues in rabbitmq                                           |"
 	@echo "| lint           | Run golangci-lint                                                 |"
 	@echo " ———————————————————————————————————————————————————————————————————————————————————— "

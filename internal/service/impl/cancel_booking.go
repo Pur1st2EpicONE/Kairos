@@ -34,7 +34,7 @@ func (c *CoreService) CancelBooking(ctx context.Context, bookingID int64) error 
 			}
 		}()
 
-		c.logger.Debug("service — expired booking was canceled", "layer", "service.impl")
+		c.logger.Debug("service — expired booking was canceled", "bookingID", bookingID, "layer", "service.impl")
 
 		return nil
 

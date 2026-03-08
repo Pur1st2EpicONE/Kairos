@@ -3,11 +3,11 @@ package v1
 import (
 	"Kairos/internal/errs"
 
-	"github.com/gin-gonic/gin"
+	"github.com/wb-go/wbf/ginext"
 	"github.com/wb-go/wbf/helpers"
 )
 
-func (h *Handler) GetInfo(c *gin.Context) {
+func (h *Handler) GetInfo(c *ginext.Context) {
 
 	eventID := c.Param("id")
 	if err := helpers.ParseUUID(eventID); err != nil {

@@ -5,10 +5,10 @@ import (
 	"Kairos/internal/models"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/wb-go/wbf/ginext"
 )
 
-func (h *Handler) CreateEvent(c *gin.Context) {
+func (h *Handler) CreateEvent(c *ginext.Context) {
 
 	userID, ok := c.Request.Context().Value("userID").(int64)
 	if !ok {

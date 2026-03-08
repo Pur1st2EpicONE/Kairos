@@ -3,11 +3,11 @@ package v1
 import (
 	"Kairos/internal/errs"
 
-	"github.com/gin-gonic/gin"
+	"github.com/wb-go/wbf/ginext"
 	"github.com/wb-go/wbf/helpers"
 )
 
-func (h *Handler) CreateBooking(c *gin.Context) {
+func (h *Handler) CreateBooking(c *ginext.Context) {
 
 	userID, ok := c.Request.Context().Value("userID").(int64)
 	if !ok {

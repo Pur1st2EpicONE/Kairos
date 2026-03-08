@@ -7,6 +7,9 @@ import (
 	"time"
 )
 
+const minBookingTTL = 1 * time.Minute
+const maxBookingTTL = 24 * time.Hour
+
 func validateUser(user models.User) error {
 	if user.Login == "" {
 		return errs.ErrEmptyLogin
@@ -35,23 +38,10 @@ func validateEvent(event *models.Event) error {
 		return err
 	}
 
-	return nil
-}
+	if err := validateBookingTTL(event.BookingTTL); err != nil {
+		return err
+	}
 
-func validateDescription(desc string) error {
-	if len(desc) > 2000 {
-		return errs.ErrDescriptionTooLong
-	}
-	return nil
-}
-
-func validateSeats(seats int) error {
-	if seats <= 0 {
-		return errs.ErrInvalidSeatCount
-	}
-	if seats > 10000 {
-		return errs.ErrTooManySeats
-	}
 	return nil
 }
 
@@ -75,6 +65,13 @@ func validateTitle(title string) error {
 
 }
 
+func validateDescription(desc string) error {
+	if len(desc) > 2000 {
+		return errs.ErrDescriptionTooLong
+	}
+	return nil
+}
+
 func validateDate(t time.Time) error {
 
 	if t.IsZero() {
@@ -92,6 +89,30 @@ func validateDate(t time.Time) error {
 
 	if t.After(now.AddDate(1, 0, 0)) {
 		return errs.ErrDateTooFar
+	}
+
+	return nil
+
+}
+
+func validateSeats(seats int) error {
+	if seats <= 0 {
+		return errs.ErrInvalidSeatCount
+	}
+	if seats > 10000 {
+		return errs.ErrTooManySeats
+	}
+	return nil
+}
+
+func validateBookingTTL(ttl time.Duration) error {
+
+	if ttl < minBookingTTL {
+		return errs.ErrBookingTTLTooShort
+	}
+
+	if ttl > maxBookingTTL {
+		return errs.ErrBookingTTLTooLong
 	}
 
 	return nil
