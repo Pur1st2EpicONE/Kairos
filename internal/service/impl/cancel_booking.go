@@ -7,8 +7,6 @@ import (
 	"errors"
 )
 
-const cancled = "Booking canceled"
-
 func (c *CoreService) CancelBooking(ctx context.Context, bookingID int64) error {
 
 	return c.storage.Transaction(ctx, func(tx *sql.Tx, ctx context.Context) error {
@@ -29,7 +27,7 @@ func (c *CoreService) CancelBooking(ctx context.Context, bookingID int64) error 
 		}
 
 		go func() {
-			if err := c.notifier.Notify(models.Notification{Channel: models.Telegram, Message: cancled}); err != nil {
+			if err := c.notifier.Notify(models.Notification{Channel: models.Telegram, Message: models.Cancled}); err != nil {
 				c.logger.LogError("service — failed to send booking expiration notification", err, "layer", "service.impl")
 			}
 		}()

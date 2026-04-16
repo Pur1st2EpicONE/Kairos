@@ -10,7 +10,7 @@ import (
 
 func (h *Handler) CreateEvent(c *ginext.Context) {
 
-	userID, ok := c.Request.Context().Value("userID").(int64)
+	userID, ok := c.Request.Context().Value(models.UserIDKey).(int64)
 	if !ok {
 		RespondError(c, errs.ErrInvalidToken)
 		return

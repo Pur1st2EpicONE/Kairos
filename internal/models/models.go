@@ -33,6 +33,15 @@ type Notification struct {
 	Message string `json:"message"`
 }
 
+type userIDContextKey struct{}
+
+var UserIDKey = userIDContextKey{}
+
+const (
+	Created = "Booking created"
+	Cancled = "Booking canceled"
+)
+
 const (
 	StatusPending   = "pending"
 	StatusConfirmed = "confirmed"

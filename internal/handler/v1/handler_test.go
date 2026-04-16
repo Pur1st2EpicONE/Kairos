@@ -227,7 +227,7 @@ func TestHandler_CreateEvent(t *testing.T) {
 	})
 
 	t.Run("invalid JSON binding", func(t *testing.T) {
-		ctx := context.WithValue(context.Background(), "userID", testUserID)
+		ctx := context.WithValue(context.Background(), models.UserIDKey, testUserID)
 		req := httptest.NewRequest(http.MethodPost, "/events", bytes.NewBufferString(`{"title":123}`))
 		req.Header.Set("Content-Type", "application/json")
 		req = req.WithContext(ctx)
@@ -238,7 +238,7 @@ func TestHandler_CreateEvent(t *testing.T) {
 	})
 
 	t.Run("missing date", func(t *testing.T) {
-		ctx := context.WithValue(context.Background(), "userID", testUserID)
+		ctx := context.WithValue(context.Background(), models.UserIDKey, testUserID)
 		req := httptest.NewRequest(http.MethodPost, "/events", bytes.NewBufferString(`{"title":"Test","description":"Desc","date":"","seats":10,"booking_ttl":"1h"}`))
 		req.Header.Set("Content-Type", "application/json")
 		req = req.WithContext(ctx)
@@ -249,7 +249,7 @@ func TestHandler_CreateEvent(t *testing.T) {
 	})
 
 	t.Run("invalid date", func(t *testing.T) {
-		ctx := context.WithValue(context.Background(), "userID", testUserID)
+		ctx := context.WithValue(context.Background(), models.UserIDKey, testUserID)
 		req := httptest.NewRequest(http.MethodPost, "/events", bytes.NewBufferString(`{"title":"Test","description":"Desc","date":"invalid","seats":10,"booking_ttl":"1h"}`))
 		req.Header.Set("Content-Type", "application/json")
 		req = req.WithContext(ctx)
@@ -260,7 +260,7 @@ func TestHandler_CreateEvent(t *testing.T) {
 	})
 
 	t.Run("invalid booking TTL", func(t *testing.T) {
-		ctx := context.WithValue(context.Background(), "userID", testUserID)
+		ctx := context.WithValue(context.Background(), models.UserIDKey, testUserID)
 		req := httptest.NewRequest(http.MethodPost, "/events", bytes.NewBufferString(`{"title":"Test","description":"Desc","date":"2026-04-15T10:00:00Z","seats":10,"booking_ttl":"invalid"}`))
 		req.Header.Set("Content-Type", "application/json")
 		req = req.WithContext(ctx)
@@ -271,7 +271,7 @@ func TestHandler_CreateEvent(t *testing.T) {
 	})
 
 	t.Run("service error", func(t *testing.T) {
-		ctx := context.WithValue(context.Background(), "userID", testUserID)
+		ctx := context.WithValue(context.Background(), models.UserIDKey, testUserID)
 		mockCore.EXPECT().CreateEvent(gomock.Any(), gomock.Any()).Return("", errors.New("internal error"))
 		req := httptest.NewRequest(http.MethodPost, "/events", bytes.NewBufferString(`{"title":"Test","description":"Desc","date":"2026-04-15T10:00:00Z","seats":10,"booking_ttl":"1h"}`))
 		req.Header.Set("Content-Type", "application/json")
@@ -282,7 +282,7 @@ func TestHandler_CreateEvent(t *testing.T) {
 	})
 
 	t.Run("success", func(t *testing.T) {
-		ctx := context.WithValue(context.Background(), "userID", testUserID)
+		ctx := context.WithValue(context.Background(), models.UserIDKey, testUserID)
 		mockCore.EXPECT().CreateEvent(gomock.Any(), gomock.Any()).Return("event123", nil)
 		req := httptest.NewRequest(http.MethodPost, "/events", bytes.NewBufferString(`{"title":"Test","description":"Desc","date":"2026-04-15T10:00:00Z","seats":10,"booking_ttl":"1h"}`))
 		req.Header.Set("Content-Type", "application/json")
@@ -310,7 +310,7 @@ func TestHandler_CreateBooking(t *testing.T) {
 	router.POST("/events/:id/book", header.CreateBooking)
 
 	t.Run("invalid UUID", func(t *testing.T) {
-		ctx := context.WithValue(context.Background(), "userID", testUserID)
+		ctx := context.WithValue(context.Background(), models.UserIDKey, testUserID)
 		req := httptest.NewRequest(http.MethodPost, "/events/"+invalidUUID+"/book", nil)
 		req = req.WithContext(ctx)
 		resp := httptest.NewRecorder()
@@ -328,7 +328,7 @@ func TestHandler_CreateBooking(t *testing.T) {
 	})
 
 	t.Run("service error", func(t *testing.T) {
-		ctx := context.WithValue(context.Background(), "userID", testUserID)
+		ctx := context.WithValue(context.Background(), models.UserIDKey, testUserID)
 		mockCore.EXPECT().CreateBooking(gomock.Any(), testUserID, testEventID).Return(int64(0), errors.New("internal error"))
 		req := httptest.NewRequest(http.MethodPost, "/events/"+testEventID+"/book", nil)
 		req = req.WithContext(ctx)
@@ -338,7 +338,7 @@ func TestHandler_CreateBooking(t *testing.T) {
 	})
 
 	t.Run("success", func(t *testing.T) {
-		ctx := context.WithValue(context.Background(), "userID", testUserID)
+		ctx := context.WithValue(context.Background(), models.UserIDKey, testUserID)
 		mockCore.EXPECT().CreateBooking(gomock.Any(), testUserID, testEventID).Return(int64(456), nil)
 		req := httptest.NewRequest(http.MethodPost, "/events/"+testEventID+"/book", nil)
 		req = req.WithContext(ctx)
@@ -365,7 +365,7 @@ func TestHandler_ConfirmBooking(t *testing.T) {
 	router.POST("/events/:id/confirm", header.ConfirmBooking)
 
 	t.Run("invalid UUID", func(t *testing.T) {
-		ctx := context.WithValue(context.Background(), "userID", testUserID)
+		ctx := context.WithValue(context.Background(), models.UserIDKey, testUserID)
 		req := httptest.NewRequest(http.MethodPost, "/events/"+invalidUUID+"/confirm", nil)
 		req = req.WithContext(ctx)
 		resp := httptest.NewRecorder()
@@ -383,7 +383,7 @@ func TestHandler_ConfirmBooking(t *testing.T) {
 	})
 
 	t.Run("service error", func(t *testing.T) {
-		ctx := context.WithValue(context.Background(), "userID", testUserID)
+		ctx := context.WithValue(context.Background(), models.UserIDKey, testUserID)
 		mockCore.EXPECT().ConfirmBooking(gomock.Any(), testUserID, testEventID).Return(errors.New("internal error"))
 		req := httptest.NewRequest(http.MethodPost, "/events/"+testEventID+"/confirm", nil)
 		req = req.WithContext(ctx)
@@ -393,7 +393,7 @@ func TestHandler_ConfirmBooking(t *testing.T) {
 	})
 
 	t.Run("success", func(t *testing.T) {
-		ctx := context.WithValue(context.Background(), "userID", testUserID)
+		ctx := context.WithValue(context.Background(), models.UserIDKey, testUserID)
 		mockCore.EXPECT().ConfirmBooking(gomock.Any(), testUserID, testEventID).Return(nil)
 		req := httptest.NewRequest(http.MethodPost, "/events/"+testEventID+"/confirm", nil)
 		req = req.WithContext(ctx)

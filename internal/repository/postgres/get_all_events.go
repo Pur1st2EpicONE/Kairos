@@ -18,10 +18,7 @@ func (c *CoreStorage) GetAllEvents(ctx context.Context) ([]models.Event, error) 
 	FROM events
 	ORDER BY created_at ASC;`
 
-	rows, err := c.db.QueryWithRetry(ctx, retry.Strategy{
-		Attempts: c.config.QueryRetryStrategy.Attempts,
-		Delay:    c.config.QueryRetryStrategy.Delay,
-		Backoff:  c.config.QueryRetryStrategy.Backoff}, query)
+	rows, err := c.db.QueryWithRetry(ctx, retry.Strategy(c.config.QueryRetryStrategy), query)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute query: %w", err)

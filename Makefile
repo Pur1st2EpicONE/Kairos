@@ -1,4 +1,4 @@
-.PHONY: all up down reset local migrate-up migrate-down test postgres rabbit app_logs postgres_logs rabbit_logs_logs queues lint .env .env.example help
+.PHONY: all up down reset migrate-up migrate-down local lint test postgres rabbit app_logs postgres_logs rabbit_logs_logs queues .env .env.example help
 .POSIX:
 .SILENT:
 
@@ -27,34 +27,33 @@ down:
 reset:
 	docker volume rm kairos_postgres_data
 
-local:
-	if [ ! -f .env ]; then cat .env.example > .env; fi 
-	if [ ! -f config.yaml ]; then cp ./configs/config.dev.yaml ./config.yaml; fi 
-	if [ ! -f docker-compose.yaml ]; then cp ./deployments/docker-compose.dev.yaml ./docker-compose.yaml; fi
-	docker compose up -d postgres rabbitmq
-	until docker exec rabbitmq rabbitmqctl status > /dev/null 2>&1; do sleep 0.5; done
-	bash -c 'trap "exit 0" INT; go run ./cmd/kairos/main.go'
-
 migrate-up:
 	@if command -v goose > /dev/null 2>&1; then $(GOOSE_CMD) up; else echo "You need Goose migration tool to use this command!"; fi
 
 migrate-down:
 	@if command -v goose > /dev/null 2>&1; then $(GOOSE_CMD) down; else echo "You need Goose migration tool to use this command!"; fi
 
+local:
+	if [ ! -f .env ]; then cat .env.example > .env; fi 
+	if [ ! -f config.yaml ]; then cp ./configs/config.dev.yaml ./config.yaml; fi 
+	if [ ! -f docker-compose.yaml ]; then cp ./deployments/docker-compose.dev.yaml ./docker-compose.yaml; fi
+	COMPOSE_BAKE=true docker compose up -d postgres rabbitmq
+	until docker exec rabbitmq rabbitmqctl status > /dev/null 2>&1; do sleep 0.5; done
+	bash -c 'trap "exit 0" INT; go run ./cmd/kairos/main.go'
+
+lint:
+	golangci-lint run ./...
+
 test:
-	cat .env.example > .env
-	cp ./configs/config.dev.yaml ./config.yaml
-	cp ./deployments/docker-compose.dev.yaml ./docker-compose.yaml
-	go test -cover ./internal/handler/v1/...
-	go test -cover ./internal/service/impl/...
-	docker compose -f docker-compose.yaml up -d postgres-test > /dev/null 2>&1
-	until docker exec postgres-test pg_isready -U ${DB_USER} > /dev/null 2>&1; do sleep 0.5; done
-	for i in $$(seq 1 10); do \
-		migrate -path ./migrations -database "postgres://${DB_USER}:${DB_PASSWORD}@localhost:5434/kairos_test?sslmode=disable" up > /dev/null 2>&1 && exit 0; sleep 1; \
-	done; exit 1
-	go test ./internal/repository/postgres -cover
-	docker compose -f docker-compose.yaml stop postgres-test > /dev/null 2>&1
-	docker compose -f docker-compose.yaml rm -f postgres-test > /dev/null 2>&1
+	if [ ! -f .env ]; then cat .env.example > .env	; fi 
+	if [ ! -f config.yaml ]; then cp ./configs/config.test.yaml ./config.yaml; fi 
+	if [ ! -f docker-compose.yaml ]; then cp ./deployments/docker-compose.test.yaml ./docker-compose.yaml; fi
+	COMPOSE_BAKE=true docker compose -f docker-compose.yaml up -d postgres-test
+	until docker exec postgres-test pg_isready -U ${DB_USER} -d kairos_test > /dev/null 2>&1; do sleep 0.5; done
+	echo "Running tests, please be patient (≈2 min)"
+	COMPOSE_BAKE=true docker compose -f docker-compose.yaml run --rm app-test > .temp 2>/dev/null
+	cat .temp; rm -f .temp
+	docker compose -f docker-compose.yaml down -v > /dev/null 2>&1
 	rm -f docker-compose.yaml config.yaml .env
 
 postgres:
@@ -75,9 +74,6 @@ rabbit_logs:
 queues:
 	docker compose exec rabbitmq rabbitmqctl list_queues
 
-lint:
-	golangci-lint run ./...
-
 .env:
 	@:
 
@@ -86,9 +82,10 @@ help:
 	@echo "| up             | Start all services (postgres, rabbitmq, app) in background        |"
 	@echo "| down           | Stop and remove all containers, networks, and temporary files     |"
 	@echo "| reset          | Remove postgres Docker volume                                     |"
-	@echo "| local          | Start local dev environment (go 1.25.1 required)                  |"
 	@echo "| migrate-up     | Apply all database migrations (Goose migration tool required)     |"
 	@echo "| migrate-down   | Rollback all database migrations (Goose migration tool required)  |"
+	@echo "| local          | Start local dev environment (go 1.25.1 required)                  |"
+	@echo "| lint           | Run golangci-lint                                                 |"
 	@echo "| test           | Run unit and integration tests                                    |"
 	@echo "| postgres       | Open psql shell inside postgres container                         |"
 	@echo "| rabbit         | Open shell inside rabbitmq container                              |"
@@ -96,7 +93,6 @@ help:
 	@echo "| postgres_logs  | Show last 10 lines of postgres logs                               |"
 	@echo "| rabbit_logs    | Show last 10 lines of rabbitmq logs                               |"
 	@echo "| queues         | List queues in rabbitmq                                           |"
-	@echo "| lint           | Run golangci-lint                                                 |"
 	@echo " ———————————————————————————————————————————————————————————————————————————————————— "
 
 .DEFAULT:

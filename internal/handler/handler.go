@@ -3,6 +3,7 @@ package handler
 import (
 	"Kairos/internal/config"
 	"Kairos/internal/errs"
+	"Kairos/internal/models"
 	"Kairos/internal/service"
 	"context"
 	"html/template"
@@ -79,7 +80,7 @@ func authJWT(service service.AuthService) gin.HandlerFunc {
 			return
 		}
 
-		c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), "userID", userID))
+		c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), models.UserIDKey, userID))
 		c.Next()
 
 	}

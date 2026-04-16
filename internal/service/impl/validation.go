@@ -7,8 +7,12 @@ import (
 	"time"
 )
 
-const minBookingTTL = 1 * time.Minute
-const maxBookingTTL = 24 * time.Hour
+const (
+	minBookingTTL        = 1 * time.Minute
+	maxBookingTTL        = 24 * time.Hour
+	maxSeats             = 10000
+	maxDescriptionLength = 2000
+)
 
 func validateUser(user models.User) error {
 	if user.Login == "" {
@@ -66,7 +70,7 @@ func validateTitle(title string) error {
 }
 
 func validateDescription(desc string) error {
-	if len(desc) > 2000 {
+	if len(desc) > maxDescriptionLength {
 		return errs.ErrDescriptionTooLong
 	}
 	return nil
@@ -99,7 +103,7 @@ func validateSeats(seats int) error {
 	if seats <= 0 {
 		return errs.ErrInvalidSeatCount
 	}
-	if seats > 10000 {
+	if seats > maxSeats {
 		return errs.ErrTooManySeats
 	}
 	return nil

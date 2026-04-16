@@ -129,12 +129,6 @@ func newContext(logger logger.Logger) (context.Context, context.CancelFunc) {
 
 }
 
-func processFunc(service service.Service) func(ctx context.Context, bookingID int64) error {
-	return func(ctx context.Context, bookingID int64) error {
-		return service.CancelBooking(ctx, bookingID)
-	}
-}
-
 func (a *App) Run() {
 
 	go a.server.Run()

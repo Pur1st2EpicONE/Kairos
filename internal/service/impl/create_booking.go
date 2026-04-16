@@ -11,8 +11,6 @@ import (
 	"github.com/lib/pq"
 )
 
-const created = "Booking created"
-
 func (c *CoreService) CreateBooking(ctx context.Context, userID int64, eventID string) (int64, error) {
 
 	var bookingID int64
@@ -42,7 +40,7 @@ func (c *CoreService) CreateBooking(ctx context.Context, userID int64, eventID s
 		}
 
 		go func() {
-			if err := c.notifier.Notify(models.Notification{Channel: models.Telegram, Message: created}); err != nil {
+			if err := c.notifier.Notify(models.Notification{Channel: models.Telegram, Message: models.Created}); err != nil {
 				c.logger.LogError("service — failed to send booking expiration notification", err, "layer", "service.impl")
 			}
 		}()

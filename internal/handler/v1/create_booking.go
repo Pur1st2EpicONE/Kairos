@@ -2,6 +2,7 @@ package v1
 
 import (
 	"Kairos/internal/errs"
+	"Kairos/internal/models"
 
 	"github.com/wb-go/wbf/ginext"
 	"github.com/wb-go/wbf/helpers"
@@ -9,7 +10,7 @@ import (
 
 func (h *Handler) CreateBooking(c *ginext.Context) {
 
-	userID, ok := c.Request.Context().Value("userID").(int64)
+	userID, ok := c.Request.Context().Value(models.UserIDKey).(int64)
 	if !ok {
 		RespondError(c, errs.ErrInvalidToken)
 		return
