@@ -1,26 +1,28 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Events List</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
     <div class="container">
-        <h1>Kairos UI</h1>
-        <p class="note">Discover and book events</p>
-        <ul class="event-list">
-            {{range .Events}}
-            <li>
-                <a href="/events/{{.ID}}">{{.Title}}</a> - {{.Date.Format "2006-01-02 15:04"}} - Available Seats: {{.Seats}}
-            </li>
-            {{end}}
-        </ul>
-        <div class="nav-links">
-            <a href="/add" id="create-link">Create New Event</a> | <a href="/login" id="login-link">Login</a> | <a href="/signup" id="signup-link">Signup</a> | <button id="signout-btn" style="display:none;">Sign Out</button>
-        </div>
+      <h1>Kairos UI</h1>
+      <ul class="event-list">
+        {{range .Events}}
+        <li>
+          <a href="/events/{{.ID}}">{{.Title}}</a> - {{.Date.Format "2006-01-02 15:04"}} - Available Seats: {{.Seats}}
+        </li>
+        {{end}}
+      </ul>
+      <div class="nav-links">
+        <a href="/add" id="create-link">Create New Event</a> |
+        <a href="/login" id="login-link">Login</a> |
+        <a href="/signup" id="signup-link">Signup</a> |
+        <button id="signout-btn" style="display: none">Sign Out</button>
+      </div>
     </div>
     <script src="/static/script.js"></script>
-</body>
+  </body>
 </html>

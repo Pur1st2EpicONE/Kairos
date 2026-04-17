@@ -4,74 +4,100 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: linear-gradient(135deg, #4f8cff, #6dd5fa);
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  background: #f8ecec;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 40px 20px;
+  color: #222;
 }
 
 .container {
-  background: rgba(255,255,255,0.92);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 40px;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 48px 40px;
   width: 100%;
   max-width: 720px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-  transition: transform 0.2s ease;
+  box-shadow:
+    0 30px 60px -15px rgba(160, 0, 0, 0.15),
+    0 12px 25px -8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #f0dcdc;
 }
 
 h1 {
   margin-top: 0;
-  margin-bottom: 25px;
-  font-weight: 600;
-  font-size: 28px;
-  color: #1a1a1a;
+  margin-bottom: 20px;
+  font-weight: 700;
+  font-size: 32px;
+  color: #111;
+  letter-spacing: -0.5px;
 }
 
 .form label {
   display: block;
-  margin-bottom: 14px;
-  font-weight: 500;
-  color: #444;
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: #222;
+  font-size: 15px;
 }
 
 .form input {
   width: 100%;
   margin-top: 6px;
-  padding: 12px 14px;
-  border-radius: 8px;
-  border: 1px solid #dcdcdc;
-  font-size: 15px;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 2px solid #e5e5e5;
+  font-size: 16px;
+  transition: all 0.25s ease;
+  background: #fff;
 }
 
 .form input:focus {
   outline: none;
-  border-color: #4f8cff;
-  box-shadow: 0 0 0 3px rgba(79,140,255,0.15);
+  border-color: rgb(160, 0, 0);
+  box-shadow: 0 0 0 4px rgba(160, 0, 0, 0.15);
 }
 
 .form button {
-  margin-top: 20px;
+  margin-top: 24px;
   width: 100%;
   border: none;
-  border-radius: 10px;
-  padding: 13px;
-  font-size: 16px;
-  font-weight: 600;
-  color: white;
-  background: linear-gradient(135deg, #4f8cff, #3b6ff5);
+  border-radius: 14px;
+  padding: 16px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, rgb(160, 0, 0), rgb(200, 20, 20));
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: box-shadow 0.25s ease;
+  box-shadow: 0 8px 20px rgba(160, 0, 0, 0.3);
 }
 
 .form button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+  box-shadow: 0 14px 32px rgba(160, 0, 0, 0.45);
+}
+
+.button-group button {
+  flex: 1;
+  border: none;
+  border-radius: 14px;
+  padding: 16px;
+  font-weight: 700;
+  font-size: 16px;
+  background: linear-gradient(135deg, rgb(160, 0, 0), rgb(200, 20, 20));
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 20px rgba(160, 0, 0, 0.3);
+}
+
+.button-group button:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 15px 30px rgba(160, 0, 0, 0.4);
 }
 
 .event-list {
@@ -81,64 +107,65 @@ h1 {
 }
 
 .event-list li {
-  background: white;
-  padding: 16px 18px;
-  border-radius: 10px;
-  margin-bottom: 12px;
-  border: 1px solid #eee;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  background: #ffffff;
+  padding: 20px 24px;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  border: 1px solid #f0dcdc;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.07);
 }
 
 .event-list li:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+  box-shadow: 0 14px 32px rgba(160, 0, 0, 0.15);
+  border-color: rgba(160, 0, 0, 0.25);
 }
 
 .event-list a {
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
-  color: #2a5cff;
+  color: rgb(160, 0, 0);
+  font-size: 18px;
 }
 
 .event-list a:hover {
-  text-decoration: underline;
+  color: rgb(180, 20, 20);
 }
 
 .description,
 .date,
 #free-seats {
   text-align: left;
-  font-size: 15px;
-  color: #444;
-  margin: 10px 0;
+  font-size: 16px;
+  color: #222;
+  margin: 12px 0;
+  line-height: 1.5;
+}
+
+#free-seats {
+  font-weight: 700;
+  font-size: 18px;
+  color: rgb(160, 0, 0);
+  background: rgba(160, 0, 0, 0.09);
+  padding: 8px 16px;
+  border-radius: 12px;
+  display: inline-block;
+  margin-top: 16px;
 }
 
 .button-group {
   display: flex;
-  gap: 12px;
-  margin-top: 25px;
-}
-
-.button-group button {
-  flex: 1;
-  border: none;
-  border-radius: 10px;
-  padding: 12px;
-  font-weight: 600;
-  background: linear-gradient(135deg, #4f8cff, #3b6ff5);
-  color: white;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.button-group button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+  gap: 14px;
+  margin-top: 32px;
 }
 
 .nav-links {
-  margin-top: 30px;
-  font-size: 14px;
+  margin-top: 40px;
+  font-size: 15px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .nav-links a,
@@ -146,25 +173,28 @@ h1 {
   text-decoration: none;
   border: none;
   background: none;
-  font-weight: 500;
-  color: #2a5cff;
-  margin: 0 8px;
-  cursor: pointer;
+  font-weight: 600;
+  color: rgb(160, 0, 0);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
 }
 
 .nav-links a:hover,
 .nav-links button:hover {
-  text-decoration: underline;
+  background: rgba(160, 0, 0, 0.12);
 }
 
 .link {
-  margin-top: 20px;
-  font-size: 14px;
+  margin-top: 28px;
+  font-size: 15px;
+  text-align: center;
 }
 
 .link a {
-  color: #2a5cff;
+  color: rgb(160, 0, 0);
   text-decoration: none;
+  font-weight: 600;
 }
 
 .link a:hover {
@@ -172,22 +202,32 @@ h1 {
 }
 
 .note {
-  font-size: 13px;
-  color: #666;
-  margin-top: 20px;
+  font-size: 14px;
+  color: #555;
+  margin-top: 24px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.event-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 8px;
 }
 
 @media (max-width: 600px) {
-
   .container {
-    padding: 28px;
+    padding: 32px 24px;
+    border-radius: 20px;
   }
 
   h1 {
-    font-size: 24px;
+    font-size: 28px;
   }
 
   .button-group {
     flex-direction: column;
+    gap: 12px;
   }
 }
