@@ -7,6 +7,9 @@ import (
 	"time"
 )
 
+// GetEventForBooking retrieves an event by its public UUID, locking the row for update.
+// It converts the stored booking_ttl (in seconds) to a time.Duration.
+// Returns the event or an error (e.g., sql.ErrNoRows).
 func (c *CoreStorage) GetEventForBooking(tx *sql.Tx, ctx context.Context, eventUUID string) (*models.Event, error) {
 
 	row := tx.QueryRowContext(ctx, `

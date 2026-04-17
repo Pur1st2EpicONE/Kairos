@@ -8,6 +8,11 @@ import (
 	"errors"
 )
 
+// ConfirmBooking confirms a pending booking for a user and event.
+// It runs within a transaction: retrieves the latest booking for the user/event,
+// validates its status (must be pending), and updates it to 'confirmed'.
+// Returns appropriate domain errors if the booking is not found, already confirmed,
+// or expired.
 func (c *CoreService) ConfirmBooking(ctx context.Context, userID int64, eventID string) error {
 
 	return c.storage.Transaction(ctx, func(tx *sql.Tx, ctx context.Context) error {

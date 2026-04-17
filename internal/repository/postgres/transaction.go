@@ -6,6 +6,9 @@ import (
 	"fmt"
 )
 
+// Transaction begins a database transaction, executes the provided function,
+// and commits if the function succeeds; otherwise rolls back.
+// It simplifies transactional operations in the service layer.
 func (c *CoreStorage) Transaction(ctx context.Context, fn func(tx *sql.Tx, ctx context.Context) error) error {
 
 	tx, err := c.db.BeginTx(ctx, nil)

@@ -9,6 +9,10 @@ import (
 	"github.com/wb-go/wbf/helpers"
 )
 
+// CreateEvent creates a new event after validation and initialisation.
+// It validates the event fields (title, date, seats, booking TTL), generates a UUID,
+// and persists the event via the storage layer. Returns the generated event UUID
+// or an error (e.g., ErrInvalidUserID if the user does not exist).
 func (c *CoreService) CreateEvent(ctx context.Context, event *models.Event) (string, error) {
 
 	if err := validateEvent(event); err != nil {
@@ -31,6 +35,7 @@ func (c *CoreService) CreateEvent(ctx context.Context, event *models.Event) (str
 
 }
 
+// initialize sets the event's ID to a new UUID.
 func initialize(event *models.Event) {
 	event.ID = helpers.CreateUUID()
 }

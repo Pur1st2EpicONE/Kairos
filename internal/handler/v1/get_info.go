@@ -7,6 +7,9 @@ import (
 	"github.com/wb-go/wbf/helpers"
 )
 
+// GetInfo handles GET /api/v1/events/:id.
+// It validates the event ID from the URL, fetches event details via the service,
+// and returns the event information as InfoResponseDTO. Returns 404 if not found.
 func (h *Handler) GetInfo(c *ginext.Context) {
 
 	eventID := c.Param("id")

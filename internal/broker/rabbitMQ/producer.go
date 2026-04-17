@@ -11,6 +11,13 @@ import (
 	"github.com/wb-go/wbf/retry"
 )
 
+// Produce publishes a booking cancellation message with a delayed expiration.
+// It creates a temporary queue for the booking ID with a TTL equal to the time
+// until the booking expires. The message is published to that queue, which
+// automatically expires after the TTL plus an additional buffer.
+// If a queue for the same booking already exists (PreconditionFailed), it
+// skips redeclaration and returns nil. The operation is retried according to
+// the producer retry strategy.
 func (b *Broker) Produce(booking *models.Booking) error {
 
 	sendAt := max(time.Until(booking.ExpiresAt), 0)

@@ -6,6 +6,9 @@ import (
 	"fmt"
 )
 
+// UpdateEventSeats atomically increments or decrements the available_seats of an event.
+// If increment is true, seats are increased (+1); otherwise decreased (-1).
+// Uses string formatting to build the query safely (op is either "+" or "-").
 func (c *CoreStorage) UpdateEventSeats(tx *sql.Tx, ctx context.Context, increment bool, eventID int64) error {
 
 	op := "-"

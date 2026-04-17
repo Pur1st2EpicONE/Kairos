@@ -8,6 +8,9 @@ import (
 	"github.com/wb-go/wbf/retry"
 )
 
+// CreateEvent inserts a new event into the database using the configured retry strategy.
+// It maps the event's BookingTTL (duration) to seconds before storage.
+// Returns an error if the query fails after retries.
 func (c *CoreStorage) CreateEvent(ctx context.Context, event *models.Event) error {
 
 	_, err := c.db.ExecWithRetry(ctx, retry.Strategy(c.config.QueryRetryStrategy), `

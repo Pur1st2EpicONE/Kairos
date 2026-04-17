@@ -1,3 +1,5 @@
+// Package handler sets up the HTTP routing, middleware, and template rendering
+// for the Kairos service. It serves both HTML pages (web frontend) and a JSON API (v1).
 package handler
 
 import (
@@ -16,14 +18,18 @@ import (
 	"github.com/wb-go/wbf/ginext"
 )
 
-const indexPath = "web/templates/index.html"
-const addPath = "web/templates/create_event.html"
-const loginPath = "web/templates/login.html"
-const signupPath = "web/templates/signup.html"
-const eventPath = "web/templates/event.html"
+const (
+	indexPath  = "web/templates/index.html"        // Path to home page template
+	addPath    = "web/templates/create_event.html" // Path to create event page template
+	loginPath  = "web/templates/login.html"        // Path to login page template
+	signupPath = "web/templates/signup.html"       // Path to signup page template
+	eventPath  = "web/templates/event.html"        // Path to single event page template
+	header     = "Authorization"                   // HTTP header name for JWT token
+)
 
-const header = "Authorization"
-
+// NewHandler constructs the main HTTP handler with all routes, middleware,
+// and template parsing. It serves static files, HTML pages, and an API under /api/v1.
+// Returns an http.Handler ready to be passed to a server.
 func NewHandler(config config.Server, service *service.Service) http.Handler {
 
 	handler := ginext.New("")
@@ -58,6 +64,9 @@ func NewHandler(config config.Server, service *service.Service) http.Handler {
 
 }
 
+// authJWT is a Gin middleware that extracts a Bearer token from the Authorization header,
+// validates it using the AuthService, and injects the user ID into the request context.
+// If the header is missing, malformed, or the token is invalid, it responds with an error.
 func authJWT(service service.AuthService) gin.HandlerFunc {
 
 	return func(c *ginext.Context) {
@@ -87,6 +96,8 @@ func authJWT(service service.AuthService) gin.HandlerFunc {
 
 }
 
+// renderPage returns a Gin handler that renders a given HTML template with no data.
+// It sets Content-Type to text/html and executes the template; on error it returns 500.
 func renderPage(tmpl *template.Template) gin.HandlerFunc {
 	return func(c *ginext.Context) {
 		c.Header("Content-Type", "text/html")
@@ -96,6 +107,8 @@ func renderPage(tmpl *template.Template) gin.HandlerFunc {
 	}
 }
 
+// homePage returns a Gin handler that renders the home page template with a list of all events.
+// It fetches all events via CoreService, converts them to DTOs, and passes them to the template.
 func homePage(tmpl *template.Template, service service.CoreService) gin.HandlerFunc {
 
 	return func(c *ginext.Context) {
@@ -122,6 +135,10 @@ func homePage(tmpl *template.Template, service service.CoreService) gin.HandlerF
 
 }
 
+// eventPage returns a Gin handler that renders a single event page.
+// It extracts the event ID from the URL, fetches event details via CoreService,
+// and passes the DTO to the template. If the event is not found or an error occurs,
+// it responds with the appropriate error.
 func eventPage(tmpl *template.Template, service service.CoreService) gin.HandlerFunc {
 
 	return func(c *ginext.Context) {

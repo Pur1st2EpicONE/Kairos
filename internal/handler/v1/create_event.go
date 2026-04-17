@@ -8,6 +8,10 @@ import (
 	"github.com/wb-go/wbf/ginext"
 )
 
+// CreateEvent handles POST /api/v1/events.
+// It extracts the authenticated user ID from the context, binds the JSON request
+// to CreateEventDTO, validates and parses the date and booking TTL, then calls
+// the service layer to create a new event. Returns the new event ID on success.
 func (h *Handler) CreateEvent(c *ginext.Context) {
 
 	userID, ok := c.Request.Context().Value(models.UserIDKey).(int64)

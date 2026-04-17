@@ -8,6 +8,9 @@ import (
 	"errors"
 )
 
+// GetInfo retrieves public event information by its UUID.
+// It returns the event or an error. If the event is not found, it returns ErrEventNotFound.
+// Other storage errors are logged and returned as is.
 func (c *CoreService) GetInfo(ctx context.Context, eventID string) (*models.Event, error) {
 
 	event, err := c.storage.GetInfo(ctx, eventID)

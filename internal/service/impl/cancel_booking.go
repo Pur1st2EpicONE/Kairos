@@ -7,6 +7,11 @@ import (
 	"errors"
 )
 
+// CancelBooking handles the cancellation of an expired booking.
+// It is called by the message broker when a booking expires.
+// The method runs within a transaction: it cancels the booking (updates status to 'expired')
+// and increments the event's available seats. If the booking was already confirmed or cancelled,
+// it skips the update. On success, it sends a Telegram notification asynchronously.
 func (c *CoreService) CancelBooking(ctx context.Context, bookingID int64) error {
 
 	return c.storage.Transaction(ctx, func(tx *sql.Tx, ctx context.Context) error {
@@ -27,7 +32,7 @@ func (c *CoreService) CancelBooking(ctx context.Context, bookingID int64) error 
 		}
 
 		go func() {
-			if err := c.notifier.Notify(models.Notification{Channel: models.Telegram, Message: models.Cancled}); err != nil {
+			if err := c.notifier.Notify(models.Notification{Channel: models.Telegram, Message: models.StatusCancled}); err != nil {
 				c.logger.LogError("service — failed to send booking expiration notification", err, "layer", "service.impl")
 			}
 		}()

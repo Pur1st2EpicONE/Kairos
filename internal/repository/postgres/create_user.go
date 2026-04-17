@@ -7,6 +7,9 @@ import (
 	"github.com/wb-go/wbf/retry"
 )
 
+// CreateUser inserts a new user into the database with the given login and password.
+// It uses the configured retry strategy and returns the generated user ID.
+// Returns an error if the insertion fails (e.g., duplicate login).
 func (s *AuthStorage) CreateUser(ctx context.Context, user models.User) (int64, error) {
 
 	var userID int64

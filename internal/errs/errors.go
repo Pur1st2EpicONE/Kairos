@@ -1,3 +1,6 @@
+// Package errs defines reusable error variables for the Kairos
+// service. Errors are grouped by domain for better
+// readability and maintenance.
 package errs
 
 import "errors"

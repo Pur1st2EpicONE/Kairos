@@ -10,6 +10,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// GetUserId authenticates a user by login and password.
+// It validates the input, retrieves the stored user by login, and compares the password hash.
+// Returns the user ID if successful, or ErrInvalidCredentials if the user does not exist
+// or the password does not match. Other errors are logged and returned.
 func (a *AuthService) GetUserId(ctx context.Context, allegedUser models.User) (int64, error) {
 
 	if err := validateUser(allegedUser); err != nil {

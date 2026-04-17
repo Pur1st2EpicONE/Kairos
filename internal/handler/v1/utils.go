@@ -9,6 +9,8 @@ import (
 	"github.com/wb-go/wbf/ginext"
 )
 
+// parseTime converts an RFC3339 time string to a UTC time.Time value.
+// It returns ErrMissingDate if the string is empty, or ErrInvalidDate if the format is wrong.
 func parseTime(timeStr string) (time.Time, error) {
 
 	if timeStr == "" {
@@ -24,10 +26,14 @@ func parseTime(timeStr string) (time.Time, error) {
 
 }
 
+// respondOK writes a successful JSON response with HTTP 200 and a "result" field.
+// The response can be any JSON‑serializable value.
 func respondOK(c *ginext.Context, response any) {
 	c.JSON(http.StatusOK, ginext.H{"result": response})
 }
 
+// RespondError writes an error response with the appropriate HTTP status code
+// based on the error type. It uses mapErrorToStatus to determine the status.
 func RespondError(c *ginext.Context, err error) {
 	if err != nil {
 		status, msg := mapErrorToStatus(err)
@@ -35,6 +41,9 @@ func RespondError(c *ginext.Context, err error) {
 	}
 }
 
+// mapErrorToStatus converts domain errors (from the errs package) into HTTP status codes
+// and human‑readable error messages. It handles validation errors (400), not found (404),
+// conflicts (409), authentication errors (401), and defaults to 500.
 func mapErrorToStatus(err error) (int, string) {
 
 	switch {

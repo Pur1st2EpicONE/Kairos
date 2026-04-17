@@ -7,6 +7,9 @@ import (
 	"github.com/wb-go/wbf/ginext"
 )
 
+// SignUp handles POST /api/v1/auth/sign-up.
+// It binds the RegisterDTO, creates a new user via the service, generates a JWT token,
+// and returns the token on success. Returns 409 if the login already exists.
 func (h *Handler) SignUp(c *ginext.Context) {
 
 	var request RegisterDTO

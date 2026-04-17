@@ -6,6 +6,9 @@ import (
 	"database/sql"
 )
 
+// GetBookingForConfirm retrieves the most recent booking for a given user and event UUID.
+// It locks the booking row for update to prevent concurrent modifications.
+// Returns the booking or an error (e.g., sql.ErrNoRows if not found).
 func (c *CoreStorage) GetBookingForConfirm(tx *sql.Tx, ctx context.Context, userID int64, eventUUID string) (*models.Booking, error) {
 
 	row := tx.QueryRowContext(ctx, `

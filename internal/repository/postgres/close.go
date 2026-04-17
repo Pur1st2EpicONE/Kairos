@@ -1,5 +1,7 @@
 package postgres
 
+// Close closes the underlying PostgreSQL master database connection.
+// It logs an error if the close operation fails, otherwise logs a success message.
 func (s *CoreStorage) Close() {
 	if err := s.db.Master.Close(); err != nil {
 		s.logger.LogError("postgres — failed to close connection properly", err, "layer", "repository.postgres")

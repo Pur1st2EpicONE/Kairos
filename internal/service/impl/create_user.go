@@ -9,8 +9,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-const bcryptMaxLen = 72
+const bcryptMaxLen = 72 // Maximum password length accepted by bcrypt
 
+// CreateUser registers a new user.
+// It validates password length, hashes the password with bcrypt,
+// and stores the user in the database. Returns the generated user ID
+// or an error (e.g., ErrPasswordTooLong, ErrUserAlreadyExists).
 func (a *AuthService) CreateUser(ctx context.Context, user models.User) (int64, error) {
 
 	if len(user.Password) > bcryptMaxLen {

@@ -8,6 +8,9 @@ import (
 	"github.com/wb-go/wbf/retry"
 )
 
+// GetAllEvents retrieves all events from the database, ordered by creation time (ascending).
+// It returns a slice of Event structs containing public fields (uuid, title, description,
+// event_date, available_seats). Returns an error if the query or row scanning fails.
 func (c *CoreStorage) GetAllEvents(ctx context.Context) ([]models.Event, error) {
 
 	var events []models.Event

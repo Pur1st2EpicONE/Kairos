@@ -5,6 +5,9 @@ import (
 	"context"
 )
 
+// GetAllEvents retrieves all events from the storage layer.
+// If an error occurs, it is logged and an empty slice is returned.
+// This method is used for rendering the home page.
 func (c *CoreService) GetAllEvents(ctx context.Context) []models.Event {
 	events, err := c.storage.GetAllEvents(ctx)
 	if err != nil {

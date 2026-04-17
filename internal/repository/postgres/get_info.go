@@ -8,6 +8,9 @@ import (
 	"github.com/wb-go/wbf/retry"
 )
 
+// GetInfo retrieves public event details (title, description, date, available seats)
+// by its UUID, without locking. Uses the configured query retry strategy.
+// Returns the event or an error.
 func (c *CoreStorage) GetInfo(ctx context.Context, eventUUID string) (*models.Event, error) {
 
 	row, err := c.db.QueryRowWithRetry(ctx, retry.Strategy(c.config.QueryRetryStrategy), `
