@@ -2,6 +2,10 @@
 
 <h3 align="center">Robust event booking service using RabbitMQ delayed queues, PostgreSQL storage, JWT authentication, and automatic cancellation of expired reservations.</h3>
 
+##
+
+![example gif](assets/example.gif)
+
 <br>
 
 ## Table of Contents
@@ -20,8 +24,8 @@
 - **App** — the central orchestrator.
   Loads configuration, initializes all components (storage, broker, notifier, service, HTTP server), wires dependencies, and manages startup and graceful shutdown using a shared context.
 
-- **Broker** — messaging layer (RabbitMQ) responsible for delayed cancellation of bookings.
-  When a booking is created, a message is published to a per‑booking queue with a TTL equal to the booking’s time‑to‑live. After the TTL expires, the message is dead‑lettered into the main queue, where a consumer picks it up and triggers the cancellation logic.
+- **Handler** — HTTP layer (Gin).
+  Serves both JSON API endpoints and simple HTML pages for user interaction. Handles request parsing, response formatting, and error mapping.
 
 - **Service** — the application‑level business logic.
   Validates inputs, enforces state transitions, coordinates with storage, broker, and notifier, and exposes a clean API to the HTTP layer. Domain rules live here.
@@ -29,11 +33,13 @@
 - **Storage** — the persistent data layer (PostgreSQL). 
   Stores users, events, and bookings. Uses transactions to ensure data consistency when creating bookings, confirming payments, or cancelling expired reservations.
 
+- **Broker** — messaging layer (RabbitMQ) responsible for delayed cancellation of bookings.
+  When a booking is created, a message is published to a per‑booking queue with a TTL equal to the booking’s time‑to‑live. After the TTL expires, the message is dead‑lettered into the main queue, where a consumer picks it up and triggers the cancellation logic.
+
 - **Notifier** — delivery adapter for outbound notifications. 
   Sends alerts when a booking is created or cancelled (expired). Encapsulates channel‑specific protocols behind a unified interface.
 
-- **Handler** — HTTP layer (Gin).
-  Serves both JSON API endpoints and simple HTML pages for user interaction. Handles request parsing, response formatting, and error mapping.
+![kairos diagram](assets/diagram.png)
 
 <br>
 
